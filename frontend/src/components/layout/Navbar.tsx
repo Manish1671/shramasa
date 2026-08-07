@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Search, ShoppingBag, UserRound } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 const navigation = [
   { href: "/", label: "Home" },
@@ -42,14 +42,17 @@ export function Navbar() {
           >
             <Search />
           </Button>
-          <Button
-            variant="ghost"
-            className="transition-none active:translate-y-0"
+          <Link
+            href="/login"
+            className={buttonVariants({
+              variant: "ghost",
+              className: "transition-none active:translate-y-0",
+            })}
             aria-label="Log in"
           >
             <UserRound data-icon="inline-start" />
             Login
-          </Button>
+          </Link>
           <Button
             variant="ghost"
             size="icon"
