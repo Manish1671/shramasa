@@ -1,7 +1,10 @@
 import Link from "next/link";
-import { Search, ShoppingBag, UserRound } from "lucide-react";
+import { Heart, Search, ShoppingBag, UserRound } from "lucide-react";
 
 import { Button, buttonVariants } from "@/components/ui/button";
+import { apiFetch, getAccessToken, getCurrentUser } from "@/lib/api";
+import type { Cart } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 const navigation = [
   { href: "/", label: "Home" },
@@ -10,7 +13,20 @@ const navigation = [
   { href: "/contact", label: "Contact" },
 ];
 
-export function Navbar() {
+export async function Navbar() {
+  const token = await getAccessToken();
+  const user = token ? await getCurrentUser() : null;
+
+  let cartCount = 0;
+  if (user) {
+    try {
+      const cart = await apiFetch<Cart>("/cart");
+      cartCount = cart.itemCount;
+    } catch {
+      cartCount = 0;
+    }
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav
@@ -21,12 +37,12 @@ export function Navbar() {
           Shramasa
         </Link>
 
-        <div className="flex items-center gap-6">
+        <div className="hidden items-center gap-6 md:flex">
           {navigation.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm text-muted-foreground hover:text-foreground"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               {item.label}
             </Link>
@@ -43,24 +59,51 @@ export function Navbar() {
             <Search />
           </Button>
           <Link
-            href="/login"
+            href="/wishlist"
+            className={buttonVariants({
+              variant: "ghost",
+              size: "icon",
+              className: "transition-none active:translate-y-0",
+            })}
+            aria-label="Wishlist"
+          >
+            <Heart />
+          </Link>
+          <Link
+            href={user ? "/account" : "/login"}
             className={buttonVariants({
               variant: "ghost",
               className: "transition-none active:translate-y-0",
             })}
-            aria-label="Log in"
+            aria-label={user ? "Account" : "Log in"}
           >
             <UserRound data-icon="inline-start" />
-            Login
+            <span className="hidden sm:inline">
+              {user ? "Account" : "Login"}
+            </span>
           </Link>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="transition-none active:translate-y-0"
-            aria-label="Shopping cart"
+          <Link
+            href="/cart"
+            className={cn(
+              buttonVariants({
+                variant: "ghost",
+                size: "icon",
+                className: "relative transition-none active:translate-y-0",
+              }),
+            )}
+            aria-label={
+              cartCount > 0
+                ? `Shopping cart, ${cartCount} items`
+                : "Shopping cart"
+            }
           >
             <ShoppingBag />
-          </Button>
+            {cartCount > 0 ? (
+              <span className="absolute top-1.5 right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-foreground px-1 text-[0.625rem] font-medium text-background">
+                {cartCount > 99 ? "99+" : cartCount}
+              </span>
+            ) : null}
+          </Link>
         </div>
       </nav>
     </header>

@@ -18,8 +18,8 @@ export default function ForgotPasswordPage() {
             Forgot Password?
           </h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Enter your email and we&apos;ll send you a secure password reset
-            link.
+            Password reset email delivery is not available yet. This page will
+            be activated when email infrastructure is added.
           </p>
         </CardHeader>
 
@@ -34,10 +34,11 @@ export default function ForgotPasswordPage() {
                 placeholder="you@example.com"
                 autoComplete="email"
                 className="h-10"
+                disabled
               />
             </div>
 
-            <Button type="button" size="lg" className="w-full">
+            <Button type="button" size="lg" className="w-full" disabled>
               Send Reset Link
             </Button>
           </form>

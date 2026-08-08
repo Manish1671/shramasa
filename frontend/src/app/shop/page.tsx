@@ -1,90 +1,51 @@
 import Link from "next/link";
-import { Star } from "lucide-react";
 
-import { buttonVariants } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { ProductCard } from "@/components/commerce/ProductCard";
+import { apiFetch, getAccessToken } from "@/lib/api";
+import type { Product, Wishlist } from "@/lib/types";
 
-const filterGroups = [
-  {
-    name: "Categories",
-    options: ["Face Care", "Hair Care", "Body Care", "Hair Growth"],
-  },
-  {
-    name: "Price",
-    options: ["Under ₹500", "₹500 – ₹999", "₹1,000 and above"],
-  },
-  {
-    name: "Availability",
-    options: ["In Stock", "Out of Stock"],
-  },
-];
+async function getProducts(): Promise<Product[]> {
+  return apiFetch<Product[]>("/products", {}, { auth: false });
+}
 
-const products = [
-  {
-    name: "Radiance Face Serum",
-    slug: "radiance-face-serum",
-    description: "Brightens and supports an even-looking complexion.",
-    price: "₹899",
-    rating: "4.9",
-  },
-  {
-    name: "Daily Defense Sunscreen",
-    slug: "daily-defense-sunscreen",
-    description: "Lightweight daily protection with a comfortable finish.",
-    price: "₹749",
-    rating: "4.8",
-  },
-  {
-    name: "Strengthening Hair Oil",
-    slug: "strengthening-hair-oil",
-    description: "Nourishes the scalp and helps reduce visible breakage.",
-    price: "₹649",
-    rating: "4.9",
-  },
-  {
-    name: "Hydrating Moisturizer",
-    slug: "hydrating-moisturizer",
-    description: "Replenishes lasting moisture without feeling heavy.",
-    price: "₹799",
-    rating: "4.7",
-  },
-  {
-    name: "Gentle Cleansing Gel",
-    slug: "gentle-cleansing-gel",
-    description: "Lifts away impurities while respecting the skin barrier.",
-    price: "₹549",
-    rating: "4.8",
-  },
-  {
-    name: "Repair Hair Mask",
-    slug: "repair-hair-mask",
-    description: "Deeply conditions dry lengths for softer-looking hair.",
-    price: "₹949",
-    rating: "4.7",
-  },
-  {
-    name: "Nourishing Body Lotion",
-    slug: "nourishing-body-lotion",
-    description: "Comforts dry skin with lightweight, lasting hydration.",
-    price: "₹599",
-    rating: "4.6",
-  },
-  {
-    name: "Scalp Renewal Serum",
-    slug: "scalp-renewal-serum",
-    description: "Refreshes the scalp and supports healthier-looking roots.",
-    price: "₹999",
-    rating: "4.8",
-  },
-];
+async function getWishlistProductIds(): Promise<Set<string>> {
+  const token = await getAccessToken();
+  if (!token) {
+    return new Set();
+  }
 
-export default function ShopPage() {
+  try {
+    const wishlist = await apiFetch<Wishlist>("/wishlist");
+    return new Set(wishlist.items.map((item) => item.productId));
+  } catch {
+    return new Set();
+  }
+}
+
+export default async function ShopPage() {
+  const [allProducts, wishlistIds] = await Promise.all([
+    getProducts(),
+    getWishlistProductIds(),
+  ]);
+  const products = allProducts.filter((product) => product.isActive);
+  const categoryOptions = [
+    ...new Set(products.map((product) => product.category.name)),
+  ];
+  const filterGroups = [
+    {
+      name: "Categories",
+      options: categoryOptions,
+    },
+    {
+      name: "Price",
+      options: ["Under ₹500", "₹500 – ₹999", "₹1,000 and above"],
+    },
+    {
+      name: "Availability",
+      options: ["In Stock", "Out of Stock"],
+    },
+  ];
+
   return (
     <main className="px-6 py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl">
@@ -154,54 +115,30 @@ export default function ShopPage() {
           </aside>
 
           <section aria-label="Products">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
-              {products.map((product) => (
-                <Card key={product.slug} className="relative h-full">
-                  <Link
-                    href={`/shop/${product.slug}`}
-                    aria-label={`View ${product.name}`}
-                    className="absolute inset-0 z-0 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            {products.length === 0 ? (
+              <div className="rounded-2xl border border-border px-6 py-16 text-center">
+                <h2 className="text-xl font-semibold">No products found</h2>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Check back soon for new arrivals.
+                </p>
+                <Link
+                  href="/"
+                  className="mt-6 inline-block text-sm font-medium underline underline-offset-4"
+                >
+                  Return home
+                </Link>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+                {products.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    wishlisted={wishlistIds.has(product.id)}
                   />
-                    <div
-                      role="img"
-                      aria-label={`${product.name} image placeholder`}
-                      className="mx-4 flex aspect-4/5 items-center justify-center rounded-xl bg-muted text-xs font-medium text-muted-foreground"
-                    >
-                      Product Image
-                    </div>
-
-                    <CardHeader>
-                      <h2 className="text-base font-semibold">{product.name}</h2>
-                      <CardDescription className="leading-6">
-                        {product.description}
-                      </CardDescription>
-                    </CardHeader>
-
-                    <CardContent className="mt-auto flex items-center justify-between">
-                      <span className="font-semibold">{product.price}</span>
-                      <span
-                        className="flex items-center gap-1 text-sm"
-                        aria-label={`${product.rating} out of 5 stars`}
-                      >
-                        <Star
-                          className="size-4 fill-current"
-                          aria-hidden="true"
-                        />
-                        {product.rating}
-                      </span>
-                    </CardContent>
-
-                    <CardFooter className="relative z-10">
-                      <Link
-                        href="/cart"
-                        className={buttonVariants({ className: "w-full" })}
-                      >
-                        Add to Cart
-                      </Link>
-                    </CardFooter>
-                </Card>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </section>
         </div>
       </div>

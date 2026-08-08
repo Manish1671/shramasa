@@ -1,162 +1,171 @@
-import Link from "next/link";
-import { ChevronDown, Minus, Plus, Star } from "lucide-react";
+import Image from "next/image";
+import { notFound } from "next/navigation";
+import { ChevronDown } from "lucide-react";
 
-import { Button, buttonVariants } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { ProductCard } from "@/components/commerce/ProductCard";
+import { ProductPurchaseControls } from "@/components/commerce/ProductPurchaseControls";
+import { apiFetch, getAccessToken } from "@/lib/api";
+import { formatInr } from "@/lib/format";
+import type { Product, Wishlist } from "@/lib/types";
 
-const productDetails = [
-  {
-    title: "Description",
-    content:
-      "A refined daily serum designed to support brighter, smoother, and more balanced-looking skin.",
-  },
-  {
-    title: "Ingredients",
-    content:
-      "A thoughtfully selected blend of hydrating, soothing, and antioxidant-rich ingredients.",
-  },
-  {
-    title: "How to Use",
-    content:
-      "Apply a few drops to clean, dry skin morning or evening, then follow with moisturizer.",
-  },
-  {
-    title: "Shipping & Returns",
-    content:
-      "Orders ship across India. Eligible unopened products may be returned according to our returns policy.",
-  },
-];
+type ProductDetailsPageProps = {
+  params: Promise<{
+    slug: string;
+  }>;
+};
 
-const recommendations = [
-  {
-    name: "Daily Defense Sunscreen",
-    description: "Lightweight daily protection with a comfortable finish.",
-    price: "₹749",
-    rating: "4.8",
-  },
-  {
-    name: "Hydrating Moisturizer",
-    description: "Replenishes lasting moisture without feeling heavy.",
-    price: "₹799",
-    rating: "4.7",
-  },
-  {
-    name: "Gentle Cleansing Gel",
-    description: "Cleanses while respecting the natural skin barrier.",
-    price: "₹549",
-    rating: "4.8",
-  },
-  {
-    name: "Nourishing Body Lotion",
-    description: "Comforts dry skin with lightweight hydration.",
-    price: "₹599",
-    rating: "4.6",
-  },
-];
+async function getProduct(slug: string): Promise<Product> {
+  try {
+    return await apiFetch<Product>(
+      `/products/${encodeURIComponent(slug)}`,
+      {},
+      { auth: false },
+    );
+  } catch {
+    notFound();
+    throw new Error("Product not found");
+  }
+}
 
-export default function ProductDetailsPage() {
+async function getRecommendations(): Promise<Product[]> {
+  try {
+    return await apiFetch<Product[]>("/products", {}, { auth: false });
+  } catch {
+    return [];
+  }
+}
+
+async function isWishlisted(productId: string): Promise<boolean> {
+  const token = await getAccessToken();
+  if (!token) {
+    return false;
+  }
+
+  try {
+    const wishlist = await apiFetch<Wishlist>("/wishlist");
+    return wishlist.items.some((item) => item.productId === productId);
+  } catch {
+    return false;
+  }
+}
+
+export default async function ProductDetailsPage({
+  params,
+}: ProductDetailsPageProps) {
+  const { slug } = await params;
+  const [product, products] = await Promise.all([
+    getProduct(slug),
+    getRecommendations(),
+  ]);
+  const wishlisted = await isWishlisted(product.id);
+  const primaryImage = product.images[0];
+  const recommendations = products
+    .filter(
+      (recommendation) =>
+        recommendation.isActive && recommendation.id !== product.id,
+    )
+    .slice(0, 4);
+  const productDetails = [
+    {
+      title: "Description",
+      content: product.description,
+    },
+    {
+      title: "Ingredients",
+      content: product.ingredients ?? "Ingredient information is coming soon.",
+    },
+    {
+      title: "How to Use",
+      content: product.howToUse ?? "Usage instructions are coming soon.",
+    },
+    {
+      title: "Shipping & Returns",
+      content:
+        "Orders ship across India. Eligible unopened products may be returned according to our returns policy.",
+    },
+  ];
+
   return (
     <main className="px-6 py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl">
         <div className="grid items-start gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
-            <div
-              role="img"
-              aria-label="Radiance Renewal Serum image placeholder"
-              className="flex aspect-square items-center justify-center rounded-3xl bg-muted text-sm font-medium text-muted-foreground"
-            >
-              Product Image
+            <div className="relative aspect-square overflow-hidden rounded-3xl bg-muted">
+              {primaryImage ? (
+                <Image
+                  src={primaryImage.url}
+                  alt={primaryImage.altText ?? product.name}
+                  fill
+                  priority
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  className="object-cover"
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center text-sm font-medium text-muted-foreground">
+                  Product Image
+                </div>
+              )}
             </div>
 
-            <div className="mt-4 grid grid-cols-4 gap-3">
-              {Array.from({ length: 4 }, (_, index) => (
-                <div
-                  key={index}
-                  role="img"
-                  aria-label={`Product thumbnail ${index + 1} placeholder`}
-                  className="flex aspect-square items-center justify-center rounded-xl border border-border bg-muted/60 text-xs text-muted-foreground"
-                >
-                  {index + 1}
-                </div>
-              ))}
-            </div>
+            {product.images.length > 0 && (
+              <div className="mt-4 grid grid-cols-4 gap-3">
+                {product.images.map((image) => (
+                  <div
+                    key={image.id}
+                    className="relative aspect-square overflow-hidden rounded-xl border border-border bg-muted"
+                  >
+                    <Image
+                      src={image.url}
+                      alt={image.altText ?? product.name}
+                      fill
+                      sizes="(min-width: 1024px) 12vw, 25vw"
+                      className="object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="lg:py-8">
             <p className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
-              Shramasa Skincare
+              {product.category.name}
             </p>
             <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">
-              Radiance Renewal Serum
+              {product.name}
             </h1>
 
-            <div className="mt-5 flex items-center gap-2">
-              <div
-                className="flex items-center gap-1"
-                aria-label="4.9 out of 5 stars"
-              >
-                {Array.from({ length: 5 }, (_, index) => (
-                  <Star
-                    key={index}
-                    className="size-4 fill-current"
-                    aria-hidden="true"
-                  />
-                ))}
-              </div>
-              <span className="text-sm text-muted-foreground">
-                4.9 · 128 reviews
-              </span>
+            <div className="mt-5 flex items-center gap-2 text-sm text-muted-foreground">
+              <span
+                className={`size-2 rounded-full ${
+                  product.stock > 0 ? "bg-emerald-600" : "bg-muted-foreground"
+                }`}
+                aria-hidden="true"
+              />
+              {product.stock > 0
+                ? `${product.stock} in stock`
+                : "Currently out of stock"}
             </div>
 
-            <p className="mt-6 text-2xl font-semibold">₹899</p>
+            <div className="mt-6 flex items-baseline gap-3">
+              <p className="text-2xl font-semibold">
+                {formatInr(product.price)}
+              </p>
+              {product.compareAtPrice && (
+                <p className="text-base text-muted-foreground line-through">
+                  {formatInr(product.compareAtPrice)}
+                </p>
+              )}
+            </div>
             <p className="mt-6 max-w-xl text-base leading-7 text-muted-foreground">
-              An elevated daily serum crafted to reveal a luminous,
-              healthy-looking complexion while delivering weightless hydration
-              and comfort.
+              {product.description}
             </p>
 
-            <div className="mt-10">
-              <p className="text-sm font-medium">Quantity</p>
-              <div className="mt-3 inline-flex items-center rounded-lg border border-border">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Decrease quantity"
-                >
-                  <Minus />
-                </Button>
-                <span className="w-10 text-center text-sm" aria-label="Quantity">
-                  1
-                </span>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Increase quantity"
-                >
-                  <Plus />
-                </Button>
-              </div>
-            </div>
-
-            <div className="mt-8 grid gap-3 sm:grid-cols-2">
-              <Link
-                href="/cart"
-                className={buttonVariants({ size: "lg", className: "w-full" })}
-              >
-                Add to Cart
-              </Link>
-              <Button type="button" variant="outline" size="lg">
-                Buy Now
-              </Button>
-            </div>
+            <ProductPurchaseControls
+              productId={product.id}
+              stock={product.stock}
+              initialWishlisted={wishlisted}
+            />
 
             <div className="mt-12 border-t border-border">
               {productDetails.map((detail) => (
@@ -174,58 +183,25 @@ export default function ProductDetailsPage() {
           </div>
         </div>
 
-        <section className="pt-24 sm:pt-28" aria-labelledby="recommendations">
-          <h2
-            id="recommendations"
-            className="text-3xl font-semibold tracking-tight"
-          >
-            You May Also Like
-          </h2>
+        {recommendations.length > 0 && (
+          <section className="pt-24 sm:pt-28" aria-labelledby="recommendations">
+            <h2
+              id="recommendations"
+              className="text-3xl font-semibold tracking-tight"
+            >
+              You May Also Like
+            </h2>
 
-          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {recommendations.map((product) => (
-              <Card key={product.name} className="h-full">
-                <div
-                  role="img"
-                  aria-label={`${product.name} image placeholder`}
-                  className="mx-4 flex aspect-4/5 items-center justify-center rounded-xl bg-muted text-xs font-medium text-muted-foreground"
-                >
-                  Product Image
-                </div>
-
-                <CardHeader>
-                  <h3 className="text-base font-semibold">{product.name}</h3>
-                  <CardDescription className="leading-6">
-                    {product.description}
-                  </CardDescription>
-                </CardHeader>
-
-                <CardContent className="mt-auto flex items-center justify-between">
-                  <span className="font-semibold">{product.price}</span>
-                  <span
-                    className="flex items-center gap-1 text-sm"
-                    aria-label={`${product.rating} out of 5 stars`}
-                  >
-                    <Star
-                      className="size-4 fill-current"
-                      aria-hidden="true"
-                    />
-                    {product.rating}
-                  </span>
-                </CardContent>
-
-                <CardFooter>
-                  <Link
-                    href="/cart"
-                    className={buttonVariants({ className: "w-full" })}
-                  >
-                    Add to Cart
-                  </Link>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-        </section>
+            <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {recommendations.map((recommendation) => (
+                <ProductCard
+                  key={recommendation.id}
+                  product={recommendation}
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </main>
   );
