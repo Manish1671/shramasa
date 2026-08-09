@@ -1,14 +1,22 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Cormorant_Garamond, Geist_Mono, Outfit } from "next/font/google";
 
 import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
+import { ConditionalFooter } from "@/components/layout/ConditionalFooter";
+import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
+});
+
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const geistMono = Geist_Mono({
@@ -17,7 +25,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Shramasa | Premium Skincare & Haircare",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  ),
+  title: {
+    default: "Shramasa | Premium Skincare & Haircare",
+    template: "%s | Shramasa",
+  },
   description:
     "Discover premium skincare, haircare, and personal care products crafted with high-quality ingredients for healthy skin and beautiful hair.",
   applicationName: "Shramasa",
@@ -36,6 +50,9 @@ export const metadata: Metadata = {
   authors: [{ name: "Shramasa" }],
   robots: "index, follow",
   openGraph: {
+    type: "website",
+    locale: "en_IN",
+    siteName: "Shramasa",
     title: "Shramasa | Premium Skincare & Haircare",
     description:
       "Discover premium skincare, haircare, and personal care products crafted with high-quality ingredients for healthy skin and beautiful hair.",
@@ -52,12 +69,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${outfit.variable} ${cormorant.variable} ${geistMono.variable} h-full`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="flex min-h-full flex-col font-sans">
         <AnnouncementBar />
         <Navbar />
-        {children}
+        <div className="flex flex-1 flex-col">{children}</div>
+        <ConditionalFooter>
+          <Footer />
+        </ConditionalFooter>
       </body>
     </html>
   );

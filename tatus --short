@@ -1,0 +1,60 @@
+warning: in the working copy of 'backend/.env.example', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'backend/prisma.config.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'backend/prisma/seed.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/next.config.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/app/account/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/app/globals.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/app/layout.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/app/login/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/app/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/app/register/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/app/shop/[slug]/loading.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/app/shop/[slug]/not-found.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/app/shop/[slug]/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/app/shop/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/app/wishlist/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/commerce/AddToCartButton.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/commerce/CartView.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/commerce/CheckoutView.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/commerce/ProductCard.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/commerce/ProductPurchaseControls.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/commerce/WishlistToggleButton.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/layout/AnnouncementBar.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/layout/Navbar.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/sections/BestSellers.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/sections/Categories.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/sections/Hero.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/sections/WhyShramasa.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/ui/button.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/lib/types.ts', LF will be replaced by CRLF the next time Git touches it
+ backend/.env.example                               |   1 [32m+[m
+ backend/prisma.config.ts                           |   2 [32m+[m[31m-[m
+ backend/prisma/seed.ts                             | 707 [32m++++++++++++++++++[m[31m---[m
+ backend/src/app.module.ts                          |   2 [32m+[m
+ frontend/next.config.ts                            |   7 [32m+[m[31m-[m
+ frontend/src/app/account/page.tsx                  |   2 [32m+[m[31m-[m
+ frontend/src/app/globals.css                       | 213 [32m++++[m[31m---[m
+ frontend/src/app/layout.tsx                        |  31 [32m+[m[31m-[m
+ frontend/src/app/login/page.tsx                    |  13 [31m-[m
+ frontend/src/app/page.tsx                          |  28 [32m+[m[31m-[m
+ frontend/src/app/register/page.tsx                 |  13 [31m-[m
+ frontend/src/app/shop/[slug]/loading.tsx           |  62 [32m+[m[31m-[m
+ frontend/src/app/shop/[slug]/not-found.tsx         |  21 [32m+[m[31m-[m
+ frontend/src/app/shop/[slug]/page.tsx              | 337 [32m+++++++[m[31m---[m
+ frontend/src/app/shop/page.tsx                     | 138 [32m+[m[31m---[m
+ frontend/src/app/wishlist/page.tsx                 |  26 [32m+[m[31m-[m
+ .../src/components/commerce/AddToCartButton.tsx    |   4 [32m+[m[31m-[m
+ frontend/src/components/commerce/CartView.tsx      |  44 [32m+[m[31m-[m
+ frontend/src/components/commerce/CheckoutView.tsx  |  36 [32m+[m[31m-[m
+ frontend/src/components/commerce/ProductCard.tsx   |  98 [32m+[m[31m--[m
+ .../commerce/ProductPurchaseControls.tsx           |  53 [32m+[m[31m-[m
+ .../components/commerce/WishlistToggleButton.tsx   |  12 [32m+[m[31m-[m
+ frontend/src/components/layout/AnnouncementBar.tsx |  18 [32m+[m[31m-[m
+ frontend/src/components/layout/Navbar.tsx          |  96 [32m+[m[31m--[m
+ frontend/src/components/sections/BestSellers.tsx   | 141 [32m++[m[31m--[m
+ frontend/src/components/sections/Categories.tsx    | 176 [32m+++[m[31m--[m
+ frontend/src/components/sections/Hero.tsx          | 150 [32m+++[m[31m--[m
+ frontend/src/components/sections/WhyShramasa.tsx   |  61 [32m+[m[31m-[m
+ frontend/src/components/ui/button.tsx              |   2 [32m+[m[31m-[m
+ frontend/src/lib/types.ts                          |  60 [32m++[m
+ 30 files changed, 1686 insertions(+), 868 deletions(-)

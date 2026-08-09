@@ -61,11 +61,11 @@ export function AddToCartButton({
         type="button"
         variant={variant}
         size={size}
-        className={cn("w-full", className)}
+        className={cn("w-full rounded-sm transition-all duration-300", className)}
         disabled={disabled || pending}
         onClick={handleClick}
       >
-        {pending ? "Adding..." : success ? "Added" : label}
+        {pending ? "Adding..." : success ? "Added ✓" : label}
       </Button>
       {error ? (
         <p className="mt-2 text-xs text-destructive" role="alert">

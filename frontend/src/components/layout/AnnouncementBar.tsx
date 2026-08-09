@@ -1,10 +1,16 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+
 export function AnnouncementBar() {
+  const pathname = usePathname();
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
+
   return (
-    <aside
-      aria-label="Announcement"
-      className="bg-foreground px-6 py-2 text-center text-xs text-background"
-    >
-      Complimentary shipping on qualifying orders
-    </aside>
+    <div className="bg-primary px-4 py-2.5 text-center text-[0.7rem] tracking-[0.16em] text-primary-foreground uppercase sm:text-xs">
+      Complimentary shipping across India
+    </div>
   );
 }

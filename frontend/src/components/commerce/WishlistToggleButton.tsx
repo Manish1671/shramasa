@@ -58,14 +58,22 @@ export function WishlistToggleButton({
         type="button"
         variant="outline"
         size={showLabel ? "lg" : "icon"}
-        className={cn(showLabel && "w-full", className)}
+        className={cn(
+          showLabel && "w-full",
+          "rounded-sm bg-background/90 backdrop-blur-sm transition-all duration-300 hover:scale-105",
+          className,
+        )}
         disabled={pending}
         onClick={handleClick}
         aria-label={saved ? "Remove from wishlist" : "Add to wishlist"}
         aria-pressed={saved}
       >
         <Heart
-          className={cn(saved && "fill-current")}
+          className={cn(
+            "transition-transform duration-300",
+            saved && "fill-current scale-110 text-primary",
+            pending && "opacity-60",
+          )}
           data-icon={showLabel ? "inline-start" : undefined}
         />
         {showLabel ? (saved ? "Saved" : "Save") : null}

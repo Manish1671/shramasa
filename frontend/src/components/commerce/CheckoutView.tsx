@@ -21,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { formatInr } from "@/lib/format";
+import { productImagePath } from "@/lib/product-image";
 import type { Address, Cart, SafeUser } from "@/lib/types";
 
 type CheckoutViewProps = {
@@ -93,7 +94,7 @@ export function CheckoutView({ user, cart, addresses }: CheckoutViewProps) {
   return (
     <main className="px-6 py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl">
-        <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+        <h1 className="font-heading text-4xl tracking-tight sm:text-5xl">
           Checkout
         </h1>
         <p className="mt-4 text-base text-muted-foreground">
@@ -110,7 +111,7 @@ export function CheckoutView({ user, cart, addresses }: CheckoutViewProps) {
           <div className="space-y-8">
             <Card>
               <CardHeader>
-                <h2 className="text-2xl font-semibold">Contact</h2>
+              <h2 className="font-heading text-2xl">Contact</h2>
               </CardHeader>
               <CardContent className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2 sm:col-span-2">
@@ -130,7 +131,7 @@ export function CheckoutView({ user, cart, addresses }: CheckoutViewProps) {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between gap-4">
-                <h2 className="text-2xl font-semibold">Shipping Address</h2>
+                <h2 className="font-heading text-2xl">Shipping Address</h2>
                 {addresses.length > 0 ? (
                   <Button
                     type="button"
@@ -259,7 +260,7 @@ export function CheckoutView({ user, cart, addresses }: CheckoutViewProps) {
 
             <Card>
               <CardHeader>
-                <h2 className="text-2xl font-semibold">Payment Method</h2>
+                <h2 className="font-heading text-2xl">Payment Method</h2>
               </CardHeader>
               <CardContent>
                 <RadioGroup
@@ -296,32 +297,29 @@ export function CheckoutView({ user, cart, addresses }: CheckoutViewProps) {
           <aside className="lg:sticky lg:top-24" aria-label="Order summary">
             <Card>
               <CardHeader>
-                <h2 className="text-xl font-semibold">Order Summary</h2>
+                <h2 className="font-heading text-2xl">Order Summary</h2>
               </CardHeader>
 
               <CardContent className="space-y-6">
                 <div className="space-y-4">
                   {cart.items.map((item) => {
-                    const image = item.product.images[0];
                     return (
                       <div
                         key={item.id}
                         className="grid grid-cols-[3.5rem_1fr_auto] items-center gap-3"
                       >
                         <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
-                          {image ? (
-                            <Image
-                              src={image.url}
-                              alt={image.altText ?? item.product.name}
-                              fill
-                              sizes="56px"
-                              className="object-cover"
-                            />
-                          ) : (
-                            <span className="flex h-full items-center justify-center text-[0.625rem] text-muted-foreground">
-                              Image
-                            </span>
-                          )}
+                          <Image
+                            src={productImagePath(item.product.slug)}
+                            alt={
+                              item.product.images[0]?.altText ??
+                              item.product.name
+                            }
+                            fill
+                            unoptimized
+                            sizes="56px"
+                            className="object-contain p-1"
+                          />
                         </div>
                         <div>
                           <h3 className="text-sm font-medium">

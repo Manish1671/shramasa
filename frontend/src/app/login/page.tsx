@@ -11,7 +11,6 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 
 function LoginForm() {
   const searchParams = useSearchParams();
@@ -103,18 +102,6 @@ function LoginForm() {
             {isPending ? "Signing In..." : "Login"}
           </Button>
         </form>
-
-        <div className="my-6 flex items-center gap-3">
-          <Separator className="flex-1" />
-          <span className="text-xs uppercase tracking-wider text-muted-foreground">
-            Or
-          </span>
-          <Separator className="flex-1" />
-        </div>
-
-        <Button type="button" variant="outline" size="lg" className="w-full">
-          Continue with Google
-        </Button>
 
         <p className="mt-8 text-center text-sm text-muted-foreground">
           Don&apos;t have an account?{" "}

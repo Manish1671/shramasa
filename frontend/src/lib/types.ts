@@ -121,3 +121,63 @@ export type Order = {
   address: Address;
   items: OrderItem[];
 };
+
+export type AdminStats = {
+  totalProducts: number;
+  activeProducts: number;
+  totalOrders: number;
+  pendingOrders: number;
+  deliveredOrders: number;
+  totalRevenue: string;
+};
+
+export type AdminProduct = Product & {
+  categoryId: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type AdminOrderUser = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+};
+
+export type AdminOrder = Order & {
+  user: AdminOrderUser;
+};
+
+export type ProductImageInput = {
+  url: string;
+  altText?: string;
+  sortOrder?: number;
+};
+
+export type CreateProductInput = {
+  name: string;
+  slug: string;
+  description: string;
+  ingredients?: string;
+  howToUse?: string;
+  price: number;
+  compareAtPrice?: number;
+  stock: number;
+  categoryId: string;
+  isActive?: boolean;
+  images?: ProductImageInput[];
+};
+
+export type UpdateProductInput = {
+  name?: string;
+  slug?: string;
+  description?: string;
+  ingredients?: string | null;
+  howToUse?: string | null;
+  price?: number;
+  compareAtPrice?: number | null;
+  stock?: number;
+  categoryId?: string;
+  isActive?: boolean;
+  images?: ProductImageInput[];
+};

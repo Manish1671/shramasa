@@ -1,77 +1,97 @@
-import { Leaf, ShieldCheck, Truck } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+function HeroCopy({ className }: { className?: string }) {
+  return (
+    <div className={cn("reveal", className)}>
+      <p className="text-[0.65rem] font-medium tracking-[0.28em] text-primary uppercase sm:text-[0.68rem]">
+        SHRAMASA
+      </p>
+
+      <h1 className="mt-3 font-heading text-[1.9rem] leading-[1.1] tracking-tight text-balance text-foreground sm:mt-5 sm:text-[2.75rem] lg:text-[3.15rem] xl:text-[3.35rem]">
+        Premium skincare
+        <br />
+        &amp; haircare rituals
+      </h1>
+
+      <p className="mt-3 max-w-md text-[0.875rem] leading-6 text-foreground/75 sm:mt-5 sm:text-[0.95rem] sm:leading-7 lg:text-base lg:leading-8">
+        Calm formulas for luminous skin and nourished hair — composed for
+        everyday rituals, finished with quiet elegance.
+      </p>
+
+      <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 sm:mt-8 sm:gap-x-6">
+        <Link
+          href="/shop"
+          className={cn(
+            buttonVariants({ size: "lg" }),
+            "rounded-sm bg-primary px-7 text-primary-foreground transition-colors duration-300 hover:bg-primary/90 sm:px-8",
+          )}
+        >
+          Shop collection
+        </Link>
+        <Link
+          href="/shop?category=ritual-kits"
+          className="group inline-flex items-center gap-2 text-sm tracking-wide text-foreground/85 transition-colors duration-300 hover:text-primary"
+        >
+          Explore rituals
+          <span
+            aria-hidden="true"
+            className="transition-transform duration-300 group-hover:translate-x-0.5 motion-reduce:transform-none"
+          >
+            →
+          </span>
+        </Link>
+      </div>
+
+      <ul className="mt-6 flex flex-wrap items-center gap-x-2.5 gap-y-2 border-t border-foreground/10 pt-5 text-[0.62rem] tracking-[0.12em] text-foreground/55 uppercase sm:mt-8 sm:gap-x-3 sm:pt-6 sm:text-[0.68rem] sm:tracking-[0.14em]">
+        <li>Thoughtful ingredients</li>
+        <li aria-hidden="true" className="select-none text-primary/35">
+          •
+        </li>
+        <li>Everyday rituals</li>
+        <li aria-hidden="true" className="select-none text-primary/35">
+          •
+        </li>
+        <li>Considered care</li>
+      </ul>
+    </div>
+  );
+}
 
 export function Hero() {
   return (
-    <section className="px-6 py-20 sm:py-28 lg:py-36">
-      <div className="mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-2 lg:gap-20">
-        <div className="max-w-2xl">
-          <span className="inline-flex rounded-full border border-border bg-muted/50 px-4 py-1.5 text-sm font-medium">
-            🌿 Premium Skincare &amp; Haircare
-          </span>
-
-          <h1 className="mt-8 text-4xl font-semibold tracking-tight sm:text-5xl lg:text-7xl">
-            Healthy Skin.
-            <br />
-            Beautiful Hair.
-            <br />
-            Naturally.
-          </h1>
-
-          <p className="mt-8 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
-            Discover science-backed skincare and haircare products crafted with
-            carefully selected ingredients for everyday confidence.
-          </p>
-
-          <div className="mt-10 flex flex-wrap gap-3">
-            <Button
-              type="button"
-              size="lg"
-              className="transition-none active:translate-y-0"
-            >
-              Shop Now
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="lg"
-              className="transition-none active:translate-y-0"
-            >
-              Explore Collection
-            </Button>
+    <section className="relative isolate overflow-hidden border-b border-border/45 bg-[oklch(0.955_0.012_92)]">
+      {/*
+        Single HeroCopy tree: in normal flow above the image on small screens;
+        absolutely overlaid on the image from lg up. Avoids duplicate h1/DOM.
+      */}
+      <div className="relative">
+        <div className="px-6 pb-6 pt-10 sm:px-8 lg:absolute lg:inset-0 lg:z-10 lg:flex lg:items-center lg:px-8 lg:pb-0 lg:pt-0 xl:px-10">
+          <div className="mx-auto w-full max-w-7xl">
+            <HeroCopy className="max-w-md lg:max-w-[26rem] xl:max-w-[28rem]" />
           </div>
-
-          <ul className="mt-10 grid gap-4 text-sm text-muted-foreground sm:grid-cols-3">
-            <li className="flex items-start gap-2">
-              <Leaf className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-              <span>Natural Ingredients</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <ShieldCheck
-                className="mt-0.5 size-4 shrink-0"
-                aria-hidden="true"
-              />
-              <span>Dermatologically Inspired</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <Truck className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-              <span>Fast Shipping Across India</span>
-            </li>
-          </ul>
         </div>
 
-        <div className="flex min-h-96 flex-col items-center justify-between rounded-3xl border border-[#e7ddcc] bg-[#f7f2e8] p-8 text-center sm:min-h-120 sm:p-10">
-          <span className="self-start rounded-full border border-[#d9cbb5] bg-white/70 px-3 py-1 text-xs font-medium text-neutral-700">
-            Coming Soon
-          </span>
+        <div className="relative aspect-[3/2] w-full">
+          <div className="absolute inset-0 hero-image-enter">
+            <Image
+              src="/hero-shramasa.jpg"
+              alt="Shramasa skincare and haircare products arranged on stone with soft botanical light"
+              fill
+              priority
+              unoptimized
+              sizes="100vw"
+              className="object-cover object-center"
+            />
+          </div>
+
           <div
-            className="h-64 w-40 rounded-[2rem] border border-[#d4c5ad] bg-[#e5dac8] sm:h-72 sm:w-44"
             aria-hidden="true"
+            className="pointer-events-none absolute inset-0 hidden bg-[linear-gradient(100deg,oklch(0.955_0.012_92_/_0.5)_0%,oklch(0.955_0.012_92_/_0.18)_30%,oklch(0.955_0.012_92_/_0.04)_50%,transparent_64%)] lg:block"
           />
-          <p className="text-sm font-medium text-neutral-600">
-            Premium Lifestyle Photography
-          </p>
         </div>
       </div>
     </section>

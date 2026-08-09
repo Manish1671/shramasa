@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 
 function RegisterForm() {
   const searchParams = useSearchParams();
@@ -128,18 +127,6 @@ function RegisterForm() {
             {isPending ? "Creating Account..." : "Create Account"}
           </Button>
         </form>
-
-        <div className="my-6 flex items-center gap-3">
-          <Separator className="flex-1" />
-          <span className="text-xs uppercase tracking-wider text-muted-foreground">
-            Or
-          </span>
-          <Separator className="flex-1" />
-        </div>
-
-        <Button type="button" variant="outline" size="lg" className="w-full">
-          Continue with Google
-        </Button>
 
         <p className="mt-8 text-center text-sm text-muted-foreground">
           Already have an account?{" "}

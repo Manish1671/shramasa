@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { ApiError, apiFetch, getAccessToken } from "@/lib/api";
 import { formatInr } from "@/lib/format";
+import { productImagePath } from "@/lib/product-image";
 import type { Wishlist } from "@/lib/types";
 
 export default async function WishlistPage() {
@@ -90,8 +91,6 @@ export default async function WishlistPage() {
 
         <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {wishlist.items.map((item) => {
-            const image = item.product.images[0];
-
             return (
               <Card key={item.id} className="relative h-full">
                 <Link
@@ -100,19 +99,16 @@ export default async function WishlistPage() {
                   aria-label={`View ${item.product.name}`}
                 />
                 <div className="relative mx-4 aspect-4/5 overflow-hidden rounded-xl bg-muted">
-                  {image ? (
-                    <Image
-                      src={image.url}
-                      alt={image.altText ?? item.product.name}
-                      fill
-                      sizes="(min-width: 1280px) 20vw, (min-width: 640px) 40vw, 90vw"
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
-                      Product Image
-                    </div>
-                  )}
+                  <Image
+                    src={productImagePath(item.product.slug)}
+                    alt={
+                      item.product.images[0]?.altText ?? item.product.name
+                    }
+                    fill
+                    unoptimized
+                    sizes="(min-width: 1280px) 20vw, (min-width: 640px) 40vw, 90vw"
+                    className="object-contain p-3"
+                  />
                   <div className="absolute top-3 right-3 z-10">
                     <WishlistToggleButton
                       productId={item.productId}

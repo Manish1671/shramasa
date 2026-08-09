@@ -34,7 +34,7 @@ export default async function AccountPage() {
   return (
     <main className="px-6 py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-4xl">
-        <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+        <h1 className="font-heading text-4xl font-semibold tracking-tight sm:text-5xl">
           Account
         </h1>
         <p className="mt-4 text-base text-muted-foreground">
@@ -86,10 +86,11 @@ export default async function AccountPage() {
               <div>
                 <p className="text-sm text-muted-foreground">Member since</p>
                 <p className="mt-1 font-medium">
-                  {new Date(user.createdAt).toLocaleDateString("en-IN", {
+                  {new Intl.DateTimeFormat("en-IN", {
                     month: "long",
                     year: "numeric",
-                  })}
+                    timeZone: "UTC",
+                  }).format(new Date(user.createdAt))}
                 </p>
               </div>
             </CardContent>

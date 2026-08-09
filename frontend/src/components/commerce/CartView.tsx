@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { formatInr } from "@/lib/format";
+import { productImagePath } from "@/lib/product-image";
 import type { Cart } from "@/lib/types";
 
 type CartViewProps = {
@@ -55,7 +56,7 @@ export function CartView({ initialCart }: CartViewProps) {
               aria-hidden="true"
             />
           </div>
-          <h1 className="mt-8 text-3xl font-semibold tracking-tight">
+          <h1 className="mt-8 font-heading text-4xl tracking-tight">
             Your cart is empty
           </h1>
           <p className="mt-4 text-base leading-7 text-muted-foreground">
@@ -78,7 +79,7 @@ export function CartView({ initialCart }: CartViewProps) {
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+            <h1 className="font-heading text-4xl tracking-tight sm:text-5xl">
               Shopping Cart
             </h1>
             <p className="mt-4 text-base text-muted-foreground">
@@ -114,33 +115,30 @@ export function CartView({ initialCart }: CartViewProps) {
 
             <div className="mt-6 border-y border-border">
               {cart.items.map((item, index) => {
-                const image = item.product.images[0];
+                const imageSrc = productImagePath(item.product.slug);
+                const imageAlt =
+                  item.product.images[0]?.altText ?? item.product.name;
 
                 return (
                   <div key={item.id}>
                     <article className="grid gap-5 py-6 sm:grid-cols-[7rem_1fr_auto] sm:items-center">
                       <Link
                         href={`/shop/${item.product.slug}`}
-                        className="relative flex aspect-4/5 w-28 overflow-hidden rounded-xl bg-muted"
+                      className="relative flex aspect-4/5 w-28 overflow-hidden rounded-sm bg-muted ring-1 ring-border/60"
                       >
-                        {image ? (
-                          <Image
-                            src={image.url}
-                            alt={image.altText ?? item.product.name}
-                            fill
-                            sizes="112px"
-                            className="object-cover"
-                          />
-                        ) : (
-                          <span className="m-auto text-center text-xs text-muted-foreground">
-                            Product Image
-                          </span>
-                        )}
+                        <Image
+                          src={imageSrc}
+                          alt={imageAlt}
+                          fill
+                          unoptimized
+                          sizes="112px"
+                          className="object-contain p-1"
+                        />
                       </Link>
 
                       <div>
                         <Link href={`/shop/${item.product.slug}`}>
-                          <h3 className="font-semibold hover:underline">
+                          <h3 className="font-heading text-xl transition-colors hover:text-primary">
                             {item.product.name}
                           </h3>
                         </Link>
@@ -184,7 +182,7 @@ export function CartView({ initialCart }: CartViewProps) {
                               )
                             }
                           >
-                            <Minus />
+                            <Minus aria-hidden="true" />
                           </Button>
                           <span className="w-8 text-center text-sm">
                             {item.quantity}
@@ -206,7 +204,7 @@ export function CartView({ initialCart }: CartViewProps) {
                               )
                             }
                           >
-                            <Plus />
+                            <Plus aria-hidden="true" />
                           </Button>
                         </div>
                       </div>
@@ -219,9 +217,9 @@ export function CartView({ initialCart }: CartViewProps) {
           </section>
 
           <aside className="lg:sticky lg:top-24" aria-label="Order summary">
-            <Card>
+            <Card className="rounded-sm border-border/80 shadow-[0_24px_60px_-40px_oklch(0.3_0.04_150_/0.45)]">
               <CardHeader>
-                <h2 className="text-xl font-semibold">Order Summary</h2>
+                <h2 className="font-heading text-2xl">Order Summary</h2>
               </CardHeader>
 
               <CardContent className="space-y-4">
@@ -270,7 +268,7 @@ export function CartView({ initialCart }: CartViewProps) {
             </Card>
 
             <div className="mt-6 space-y-3 px-2 text-sm text-muted-foreground">
-              {["Secure Checkout", "Fast Delivery", "Easy Returns"].map(
+              {["Secure Checkout", "Everyday Delivery", "Easy Returns"].map(
                 (item) => (
                   <p key={item} className="flex items-center gap-2">
                     <Check className="size-4" aria-hidden="true" />
