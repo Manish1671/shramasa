@@ -30,5 +30,5 @@ COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/prisma.config.ts ./prisma.config.ts
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
-EXPOSE 4000
+EXPOSE 8080
 CMD ["node", "dist/main.js"]
