@@ -18,6 +18,7 @@ COPY . .
 ENV NODE_ENV=development
 ENV DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:5432/postgres"
 RUN pnpm exec prisma generate && pnpm run build
+RUN test -f dist/src/main.js
 
 FROM node:22-alpine AS runner
 WORKDIR /app
@@ -31,4 +32,4 @@ COPY --from=build /app/prisma.config.ts ./prisma.config.ts
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
 EXPOSE 8080
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]
