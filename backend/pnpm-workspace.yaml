@@ -1,6 +1,6 @@
-allowBuilds:
-  '@prisma/engines': false
-  bcrypt: true
-  esbuild: false
-  prisma: false
-  unrs-resolver: false
+onlyBuiltDependencies:
+  - '@prisma/engines'
+  - bcrypt
+  - esbuild
+  - prisma
+  - unrs-resolver

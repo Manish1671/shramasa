@@ -2,7 +2,7 @@ FROM node:22-alpine AS deps
 WORKDIR /app
 RUN apk add --no-cache python3 make g++
 RUN corepack enable
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY prisma ./prisma
 COPY prisma.config.ts ./
 # Railway injects NODE_ENV=production; that would skip Nest/Prisma (devDependencies).
