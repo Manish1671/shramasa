@@ -54,7 +54,7 @@ export default async function OrderConfirmationPage({
     return (
       <main className="flex flex-1 items-center justify-center px-6 py-24">
         <div className="mx-auto max-w-md text-center">
-          <h1 className="text-3xl font-semibold tracking-tight">
+          <h1 className="type-h3">
             Confirmation unavailable
           </h1>
           <p className="mt-4 text-muted-foreground">
@@ -74,15 +74,22 @@ export default async function OrderConfirmationPage({
         <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-muted">
           <Check className="size-7" aria-hidden="true" />
         </div>
-        <h1 className="mt-8 text-4xl font-semibold tracking-tight">
-          Order confirmed
+        <h1 className="type-h2 mt-8">
+          {order.paymentMethod === "RAZORPAY" &&
+          order.paymentStatus !== "PAID"
+            ? "Payment pending"
+            : "Order confirmed"}
         </h1>
         <p className="mt-4 text-base leading-7 text-muted-foreground">
           Thank you for choosing Shramasa. Your order{" "}
           <span className="font-medium text-foreground">
             #{order.id.slice(-8).toUpperCase()}
           </span>{" "}
-          is {formatOrderStatus(order.status).toLowerCase()}.
+          is {formatOrderStatus(order.status).toLowerCase()}
+          {order.paymentMethod === "RAZORPAY"
+            ? ` · payment ${formatOrderStatus(order.paymentStatus).toLowerCase()}`
+            : ""}
+          .
         </p>
 
         <Card className="mt-12 text-left">
@@ -111,7 +118,7 @@ export default async function OrderConfirmationPage({
               Payment:{" "}
               {order.paymentMethod === "COD"
                 ? "Cash on Delivery"
-                : "Online payment"}
+                : `Online · ${formatOrderStatus(order.paymentStatus)}`}
             </p>
           </CardContent>
         </Card>

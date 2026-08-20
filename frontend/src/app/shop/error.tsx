@@ -24,7 +24,7 @@ export default function ShopError({ error, reset }: ShopErrorProps) {
             aria-hidden="true"
           />
         </div>
-        <h1 className="mt-6 text-3xl font-semibold tracking-tight">
+        <h1 className="type-h3 mt-6">
           Unable to load products
         </h1>
         <p className="mt-4 text-base leading-7 text-muted-foreground">

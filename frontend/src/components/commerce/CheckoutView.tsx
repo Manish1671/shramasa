@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ProductThumb } from "@/components/commerce/ProductThumb";
 import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
 import { useState, useTransition } from "react";
@@ -8,6 +8,7 @@ import { useState, useTransition } from "react";
 import {
   createAddressAction,
   placeOrderAction,
+  verifyRazorpayPaymentAction,
 } from "@/app/commerce/actions";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +22,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { formatInr } from "@/lib/format";
-import { productImagePath } from "@/lib/product-image";
+import { openRazorpayCheckout } from "@/lib/razorpay";
 import type { Address, Cart, SafeUser } from "@/lib/types";
 
 type CheckoutViewProps = {
@@ -61,8 +62,64 @@ export function CheckoutView({ user, cart, addresses }: CheckoutViewProps) {
         return;
       }
 
-      router.push(`/orders/${result.data.id}/confirmation`);
-      router.refresh();
+      if (paymentMethod === "COD") {
+        router.push(`/orders/${result.data.id}/confirmation`);
+        router.refresh();
+        return;
+      }
+
+      const checkout = result.data.razorpay;
+      if (!checkout) {
+        setError("Unable to start online payment. Please try again.");
+        return;
+      }
+
+      try {
+        await openRazorpayCheckout({
+          key: checkout.keyId,
+          amount: checkout.amount,
+          currency: checkout.currency,
+          name: "Shramasa",
+          description: `Order #${result.data.id.slice(-8).toUpperCase()}`,
+          order_id: checkout.orderId,
+          prefill: {
+            name: user.name,
+            email: user.email,
+            contact: user.phone ?? undefined,
+          },
+          theme: { color: "#19352A" },
+          handler: async (response) => {
+            const verified = await verifyRazorpayPaymentAction({
+              orderId: result.data!.id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+            });
+
+            if (!verified.ok || !verified.data) {
+              setError(
+                verified.error ??
+                  "Payment received but verification failed. Contact support with your order id.",
+              );
+              router.refresh();
+              return;
+            }
+
+            router.push(`/orders/${verified.data.id}/confirmation`);
+            router.refresh();
+          },
+          modal: {
+            ondismiss: () => {
+              setError(
+                "Payment window closed. Your order is awaiting payment — open My Orders to complete it, or place a new order.",
+              );
+              router.refresh();
+            },
+          },
+        });
+      } catch {
+        setError("Unable to open Razorpay Checkout. Please try again.");
+      }
     });
   }
 
@@ -94,7 +151,7 @@ export function CheckoutView({ user, cart, addresses }: CheckoutViewProps) {
   return (
     <main className="px-6 py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl">
-        <h1 className="font-heading text-4xl tracking-tight sm:text-5xl">
+        <h1 className="type-h2">
           Checkout
         </h1>
         <p className="mt-4 text-base text-muted-foreground">
@@ -111,7 +168,7 @@ export function CheckoutView({ user, cart, addresses }: CheckoutViewProps) {
           <div className="space-y-8">
             <Card>
               <CardHeader>
-              <h2 className="font-heading text-2xl">Contact</h2>
+              <h2 className="type-h4">Contact</h2>
               </CardHeader>
               <CardContent className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2 sm:col-span-2">
@@ -124,14 +181,14 @@ export function CheckoutView({ user, cart, addresses }: CheckoutViewProps) {
                 </div>
                 <div className="space-y-2">
                   <Label>Phone</Label>
-                  <Input value={user.phone} disabled className="h-10" />
+                  <Input value={user.phone ?? ""} disabled className="h-10" />
                 </div>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between gap-4">
-                <h2 className="font-heading text-2xl">Shipping Address</h2>
+                <h2 className="type-h4">Shipping Address</h2>
                 {addresses.length > 0 ? (
                   <Button
                     type="button"
@@ -203,7 +260,7 @@ export function CheckoutView({ user, cart, addresses }: CheckoutViewProps) {
                         id="phone"
                         name="phone"
                         required
-                        defaultValue={user.phone}
+                        defaultValue={user.phone ?? ""}
                         className="h-10"
                       />
                     </div>
@@ -260,7 +317,7 @@ export function CheckoutView({ user, cart, addresses }: CheckoutViewProps) {
 
             <Card>
               <CardHeader>
-                <h2 className="font-heading text-2xl">Payment Method</h2>
+                <h2 className="type-h4">Payment Method</h2>
               </CardHeader>
               <CardContent>
                 <RadioGroup
@@ -279,13 +336,13 @@ export function CheckoutView({ user, cart, addresses }: CheckoutViewProps) {
                   </Label>
                   <Label
                     htmlFor="payment-razorpay"
-                    className="rounded-xl border border-border p-4 opacity-70"
+                    className="rounded-xl border border-border p-4"
                   >
                     <RadioGroupItem id="payment-razorpay" value="RAZORPAY" />
                     <span>
                       <span className="block">Pay Online</span>
                       <span className="mt-1 block text-xs font-normal text-muted-foreground">
-                        Razorpay (coming soon)
+                        UPI, cards, and netbanking via Razorpay
                       </span>
                     </span>
                   </Label>
@@ -297,7 +354,7 @@ export function CheckoutView({ user, cart, addresses }: CheckoutViewProps) {
           <aside className="lg:sticky lg:top-24" aria-label="Order summary">
             <Card>
               <CardHeader>
-                <h2 className="font-heading text-2xl">Order Summary</h2>
+                <h2 className="type-h4">Order Summary</h2>
               </CardHeader>
 
               <CardContent className="space-y-6">
@@ -308,17 +365,15 @@ export function CheckoutView({ user, cart, addresses }: CheckoutViewProps) {
                         key={item.id}
                         className="grid grid-cols-[3.5rem_1fr_auto] items-center gap-3"
                       >
-                        <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
-                          <Image
-                            src={productImagePath(item.product.slug)}
+                        <div>
+                          <ProductThumb
+                            slug={item.product.slug}
                             alt={
                               item.product.images[0]?.altText ??
                               item.product.name
                             }
-                            fill
-                            unoptimized
                             sizes="56px"
-                            className="object-contain p-1"
+                            className="w-14"
                           />
                         </div>
                         <div>
@@ -366,7 +421,13 @@ export function CheckoutView({ user, cart, addresses }: CheckoutViewProps) {
                   disabled={pending || cart.items.length === 0}
                   onClick={handlePlaceOrder}
                 >
-                  {pending ? "Placing order..." : "Place Order"}
+                  {pending
+                    ? paymentMethod === "RAZORPAY"
+                      ? "Opening payment..."
+                      : "Placing order..."
+                    : paymentMethod === "RAZORPAY"
+                      ? "Pay securely"
+                      : "Place Order"}
                 </Button>
               </CardFooter>
             </Card>

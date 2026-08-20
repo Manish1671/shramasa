@@ -93,7 +93,7 @@ export function AccountAddresses({ addresses, user }: AccountAddressesProps) {
               <Input
                 id="account-phone"
                 name="phone"
-                defaultValue={user.phone}
+                defaultValue={user.phone ?? ""}
                 required
                 className="h-10"
               />

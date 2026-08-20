@@ -33,74 +33,108 @@
   --color-muted: var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-secondary: var(--secondary);
+  --color-brass: var(--brass);
+  --color-botanical: var(--botanical);
+  --color-ink: var(--ink);
+  --color-stone: var(--stone);
+  --color-subtle: var(--subtle);
+  --color-forest-deep: var(--forest-deep);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.55);
-  --radius-md: calc(var(--radius) * 0.75);
+  --radius-sm: var(--radius);
+  --radius-md: var(--radius);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.35);
-  --radius-2xl: calc(var(--radius) * 1.7);
-  --radius-3xl: calc(var(--radius) * 2.1);
-  --radius-4xl: calc(var(--radius) * 2.5);
+  --radius-xl: var(--radius);
+  --radius-2xl: var(--radius);
+  --radius-3xl: var(--radius);
+  --radius-4xl: var(--radius);
 }
 
+/*
+  SHRĀMASA DESIGN SYSTEM
+  Quiet luxury · editorial beauty · botanical India
+
+  Ivory     page paper
+  Cream     surfaces, navbar, product wells
+  Stone     alternate sections
+  Charcoal  primary type
+  Taupe     restrained accent / hairlines
+  Forest    primary CTAs only
+*/
 :root {
-  /* Warm ivory canvas + muted forest sage */
-  --background: oklch(0.975 0.012 92);
-  --foreground: oklch(0.24 0.025 150);
-  --card: oklch(0.99 0.006 92);
-  --card-foreground: oklch(0.24 0.025 150);
-  --popover: oklch(0.99 0.006 92);
-  --popover-foreground: oklch(0.24 0.025 150);
-  --primary: oklch(0.34 0.045 152);
-  --primary-foreground: oklch(0.98 0.008 92);
-  --secondary: oklch(0.94 0.015 95);
-  --secondary-foreground: oklch(0.3 0.04 150);
-  --muted: oklch(0.945 0.014 93);
-  --muted-foreground: oklch(0.5 0.02 145);
-  --accent: oklch(0.93 0.025 145);
-  --accent-foreground: oklch(0.28 0.04 150);
-  --destructive: oklch(0.55 0.18 25);
-  --border: oklch(0.88 0.015 95);
-  --input: oklch(0.9 0.012 95);
-  --ring: oklch(0.5 0.05 150);
-  --chart-1: oklch(0.72 0.04 150);
-  --chart-2: oklch(0.55 0.05 150);
-  --chart-3: oklch(0.42 0.04 150);
-  --chart-4: oklch(0.35 0.035 150);
-  --chart-5: oklch(0.28 0.03 150);
-  --radius: 0.35rem;
-  --sidebar: oklch(0.96 0.012 92);
-  --sidebar-foreground: oklch(0.24 0.025 150);
-  --sidebar-primary: oklch(0.34 0.045 152);
-  --sidebar-primary-foreground: oklch(0.98 0.008 92);
-  --sidebar-accent: oklch(0.93 0.025 145);
-  --sidebar-accent-foreground: oklch(0.28 0.04 150);
-  --sidebar-border: oklch(0.88 0.015 95);
-  --sidebar-ring: oklch(0.5 0.05 150);
+  --background: #f5f1e8;
+  --foreground: #18241e;
+  --card: #faf8f2;
+  --card-foreground: #18241e;
+  --popover: #faf8f2;
+  --popover-foreground: #18241e;
+  --primary: #19352a;
+  --primary-foreground: #f5f1e8;
+  --secondary: #e9e2d7;
+  --secondary-foreground: #18241e;
+  --muted: #e9e2d7;
+  --muted-foreground: #5e625c;
+  --accent: #8a775c;
+  --accent-foreground: #f5f1e8;
+  --botanical: #8a775c;
+  --stone: #e9e2d7;
+  --ink: #19352a;
+  --subtle: #5e625c;
+  --brass: #8a775c;
+  --forest-deep: #19352a;
+  --destructive: #8a3a32;
+  --border: #d8d0c4;
+  --input: #d8d0c4;
+  --ring: #19352a;
+  --chart-1: #8a775c;
+  --chart-2: #19352a;
+  --chart-3: #5e625c;
+  --chart-4: #18241e;
+  --chart-5: #e9e2d7;
+  --radius: 0.1875rem;
+  --sidebar: #f5f1e8;
+  --sidebar-foreground: #18241e;
+  --sidebar-primary: #19352a;
+  --sidebar-primary-foreground: #f5f1e8;
+  --sidebar-accent: #e9e2d7;
+  --sidebar-accent-foreground: #18241e;
+  --sidebar-border: #d8d0c4;
+  --sidebar-ring: #19352a;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground antialiased;
-  }
+
   html {
-    @apply font-sans scroll-smooth;
+    @apply scroll-smooth bg-background font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--primary) 18%, transparent);
+    color: var(--foreground);
+  }
+
   h1,
   h2,
   h3,
   .font-heading {
     font-family: var(--font-heading), ui-serif, Georgia, serif;
-    letter-spacing: -0.025em;
-    font-weight: 500;
+    font-weight: 400;
+    letter-spacing: -0.02em;
   }
 }
 
@@ -109,31 +143,125 @@
     text-wrap: balance;
   }
 
-  .reveal {
-    animation: reveal-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  .type-display {
+    @apply font-heading text-[2.25rem] leading-[1.06] tracking-[-0.024em] sm:text-[3.1rem] lg:text-[3.6rem];
   }
 
-  .reveal-delay-1 {
-    animation-delay: 0.1s;
+  .type-h2 {
+    @apply font-heading text-[1.85rem] leading-[1.1] tracking-[-0.022em] sm:text-[2.35rem] lg:text-[2.75rem];
   }
 
-  .reveal-delay-2 {
-    animation-delay: 0.2s;
+  .type-h3 {
+    @apply font-heading text-[1.5rem] leading-[1.15] tracking-[-0.02em] sm:text-[1.75rem];
   }
 
-  .reveal-delay-3 {
-    animation-delay: 0.32s;
+  .type-h4 {
+    @apply font-heading text-[1.2rem] leading-[1.25] tracking-[-0.015em] sm:text-[1.35rem];
+  }
+
+  .type-body {
+    @apply text-[0.95rem] leading-[1.75] text-muted-foreground sm:text-base sm:leading-[1.8];
+  }
+
+  .eyebrow {
+    @apply text-[0.6875rem] font-medium tracking-[0.16em] text-muted-foreground uppercase;
+  }
+
+  .link-quiet {
+    @apply inline-flex items-center gap-2 text-[0.6875rem] tracking-[0.16em] text-foreground/70 uppercase transition-colors duration-300 hover:text-foreground;
   }
 
   .editorial-rule {
-    @apply h-px w-12 bg-primary/35;
+    @apply h-px w-10 bg-accent/55;
+  }
+
+  .product-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    flex-shrink: 0;
+    min-height: 0;
+    background-color: transparent;
+  }
+
+  .product-frame-stage {
+    aspect-ratio: 4 / 5;
+  }
+
+  .product-frame-thumb {
+    aspect-ratio: 1 / 1;
+  }
+
+  .product-frame__atmosphere {
+    position: absolute;
+    inset: -8%;
+    z-index: 0;
+    display: block;
+    width: 116%;
+    height: 116%;
+    max-width: none;
+    max-height: none;
+    object-fit: cover;
+    object-position: center;
+    filter: blur(28px) saturate(1.04);
+    transform: scale(1.08);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .product-frame__photo {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    padding: 0;
+    object-fit: contain;
+    object-position: center;
+  }
+
+  .product-frame-thumb .product-frame__photo {
+    padding: 0.15rem;
+  }
+
+  .product-photo {
+    @apply block bg-transparent object-contain object-center;
+  }
+
+  .hairline {
+    @apply border-border;
+  }
+
+  .reveal {
+    animation: reveal-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .reveal-delay-1 {
+    animation-delay: 0.08s;
+  }
+
+  .reveal-delay-2 {
+    animation-delay: 0.16s;
+  }
+
+  .reveal-delay-3 {
+    animation-delay: 0.26s;
+  }
+
+  .mega-panel {
+    animation: mega-fade 160ms ease-out both;
   }
 }
 
 @keyframes reveal-up {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
@@ -141,36 +269,32 @@
   }
 }
 
-@keyframes hero-image-enter {
+@keyframes mega-fade {
   from {
-    opacity: 0.92;
-    transform: scale(1.01);
+    opacity: 0;
+    transform: translateY(-6px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
+  }
+}
+
+@keyframes image-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 
 .hero-image-enter {
-  animation: hero-image-enter 1.15s cubic-bezier(0.22, 1, 0.36, 1) both;
-  will-change: transform, opacity;
-}
-
-@keyframes pdp-image-enter {
-  from {
-    opacity: 0.88;
-    transform: scale(1.015);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  animation: image-enter 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .pdp-image-enter {
-  animation: pdp-image-enter 1s cubic-bezier(0.22, 1, 0.36, 1) both;
-  will-change: transform, opacity;
+  animation: image-enter 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -179,7 +303,8 @@
   .reveal-delay-2,
   .reveal-delay-3,
   .hero-image-enter,
-  .pdp-image-enter {
+  .pdp-image-enter,
+  .mega-panel {
     animation: none;
   }
 

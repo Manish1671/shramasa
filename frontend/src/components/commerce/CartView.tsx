@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ProductThumb } from "@/components/commerce/ProductThumb";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Check, Minus, Plus, ShoppingBag } from "lucide-react";
@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { formatInr } from "@/lib/format";
-import { productImagePath } from "@/lib/product-image";
 import type { Cart } from "@/lib/types";
 
 type CartViewProps = {
@@ -50,13 +49,13 @@ export function CartView({ initialCart }: CartViewProps) {
     return (
       <main className="flex flex-1 items-center justify-center px-6 py-24">
         <div className="mx-auto max-w-md text-center">
-          <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-muted">
+          <div className="mx-auto flex size-16 items-center justify-center border border-border bg-card">
             <ShoppingBag
               className="size-9 text-muted-foreground"
               aria-hidden="true"
             />
           </div>
-          <h1 className="mt-8 font-heading text-4xl tracking-tight">
+          <h1 className="type-h3 mt-8">
             Your cart is empty
           </h1>
           <p className="mt-4 text-base leading-7 text-muted-foreground">
@@ -79,7 +78,7 @@ export function CartView({ initialCart }: CartViewProps) {
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="font-heading text-4xl tracking-tight sm:text-5xl">
+            <h1 className="type-h2">
               Shopping Cart
             </h1>
             <p className="mt-4 text-base text-muted-foreground">
@@ -115,30 +114,24 @@ export function CartView({ initialCart }: CartViewProps) {
 
             <div className="mt-6 border-y border-border">
               {cart.items.map((item, index) => {
-                const imageSrc = productImagePath(item.product.slug);
                 const imageAlt =
                   item.product.images[0]?.altText ?? item.product.name;
 
                 return (
                   <div key={item.id}>
                     <article className="grid gap-5 py-6 sm:grid-cols-[7rem_1fr_auto] sm:items-center">
-                      <Link
-                        href={`/shop/${item.product.slug}`}
-                      className="relative flex aspect-4/5 w-28 overflow-hidden rounded-sm bg-muted ring-1 ring-border/60"
-                      >
-                        <Image
-                          src={imageSrc}
+                      <Link href={`/shop/${item.product.slug}`} className="w-28">
+                        <ProductThumb
+                          slug={item.product.slug}
                           alt={imageAlt}
-                          fill
-                          unoptimized
                           sizes="112px"
-                          className="object-contain p-1"
+                          className="w-28"
                         />
                       </Link>
 
                       <div>
                         <Link href={`/shop/${item.product.slug}`}>
-                          <h3 className="font-heading text-xl transition-colors hover:text-primary">
+                          <h3 className="type-h4 decoration-foreground/30 underline-offset-[6px] hover:underline">
                             {item.product.name}
                           </h3>
                         </Link>
@@ -217,9 +210,9 @@ export function CartView({ initialCart }: CartViewProps) {
           </section>
 
           <aside className="lg:sticky lg:top-24" aria-label="Order summary">
-            <Card className="rounded-sm border-border/80 shadow-[0_24px_60px_-40px_oklch(0.3_0.04_150_/0.45)]">
+            <Card>
               <CardHeader>
-                <h2 className="font-heading text-2xl">Order Summary</h2>
+                <h2 className="type-h4">Order Summary</h2>
               </CardHeader>
 
               <CardContent className="space-y-4">
@@ -268,7 +261,7 @@ export function CartView({ initialCart }: CartViewProps) {
             </Card>
 
             <div className="mt-6 space-y-3 px-2 text-sm text-muted-foreground">
-              {["Secure Checkout", "Everyday Delivery", "Easy Returns"].map(
+              {["Secure checkout", "Ships across India", "Easy returns"].map(
                 (item) => (
                   <p key={item} className="flex items-center gap-2">
                     <Check className="size-4" aria-hidden="true" />

@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useActionState } from "react";
+import { Suspense, useActionState, useCallback, useState } from "react";
 
 import { loginAction } from "@/app/auth/actions";
 import { initialAuthState } from "@/app/auth/state";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -19,6 +20,12 @@ function LoginForm() {
     loginAction,
     initialAuthState,
   );
+  const [googleError, setGoogleError] = useState<string | null>(null);
+  const handleGoogleError = useCallback((message: string) => {
+    setGoogleError(message);
+  }, []);
+
+  const error = googleError ?? state.error;
 
   return (
     <Card className="w-full max-w-md">
@@ -26,16 +33,25 @@ function LoginForm() {
         <p className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
           Shramasa
         </p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight">
+        <h1 className="type-h3 mt-3">
           Welcome Back
         </h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
           Sign in to continue your premium care experience.
         </p>
+        {searchParams.get("reset") === "1" ? (
+          <p className="mt-3 text-sm text-muted-foreground" role="status">
+            Your password has been updated. Please sign in.
+          </p>
+        ) : null}
       </CardHeader>
 
       <CardContent>
-        <form action={formAction} className="space-y-5">
+        <form
+          action={formAction}
+          className="space-y-5"
+          onSubmit={() => setGoogleError(null)}
+        >
           {nextPath ? (
             <input type="hidden" name="next" value={nextPath} />
           ) : null}
@@ -84,14 +100,14 @@ function LoginForm() {
             </Link>
           </div>
 
-          {state.error && (
+          {error ? (
             <p
               role="alert"
               className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
             >
-              {state.error}
+              {error}
             </p>
-          )}
+          ) : null}
 
           <Button
             type="submit"
@@ -102,6 +118,13 @@ function LoginForm() {
             {isPending ? "Signing In..." : "Login"}
           </Button>
         </form>
+
+        <div className="mt-6">
+          <GoogleSignInButton
+            nextPath={nextPath}
+            onError={handleGoogleError}
+          />
+        </div>
 
         <p className="mt-8 text-center text-sm text-muted-foreground">
           Don&apos;t have an account?{" "}
@@ -128,7 +151,7 @@ export default function LoginPage() {
         fallback={
           <Card className="w-full max-w-md">
             <CardHeader className="text-center">
-              <h1 className="text-3xl font-semibold tracking-tight">
+              <h1 className="type-h3">
                 Welcome Back
               </h1>
             </CardHeader>

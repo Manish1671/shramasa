@@ -1,22 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Heart, Menu, Search, ShoppingBag, UserRound, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
+import { MegaMenu } from "@/components/layout/MegaMenu";
 import { Button } from "@/components/ui/button";
+import { NAV_ITEMS } from "@/lib/nav-menu";
 import { cn } from "@/lib/utils";
-
-const navigation = [
-  { href: "/", label: "Home" },
-  { href: "/shop", label: "Shop" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-];
-
-const iconLinkClass =
-  "inline-flex size-8 items-center justify-center rounded-sm text-foreground transition-colors duration-300 hover:bg-muted hover:text-foreground";
 
 type NavbarClientProps = {
   isAuthenticated: boolean;
@@ -30,13 +22,40 @@ export function NavbarClient({
   cartCount,
 }: NavbarClientProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const searchInputId = useId();
+  const closeTimer = useRef<number | undefined>(undefined);
+
   const [open, setOpen] = useState(false);
-  // Keep initial SSR + first client paint identical; apply scroll styles only after mount.
-  const [scrolled, setScrolled] = useState(false);
-  const [scrollReady, setScrollReady] = useState(false);
+  const [menu, setMenu] = useState<string | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [mobileSection, setMobileSection] = useState<string | null>(null);
+
+  const isHome = pathname === "/";
+
+  function openMenu(id: string) {
+    window.clearTimeout(closeTimer.current);
+    setSearchOpen(false);
+    setMenu(id);
+  }
+
+  function scheduleClose() {
+    window.clearTimeout(closeTimer.current);
+    closeTimer.current = window.setTimeout(() => {
+      setMenu(null);
+    }, 70);
+  }
+
+  function cancelClose() {
+    window.clearTimeout(closeTimer.current);
+  }
 
   useEffect(() => {
     setOpen(false);
+    setMenu(null);
+    setSearchOpen(false);
+    setMobileSection(null);
   }, [pathname]);
 
   useEffect(() => {
@@ -47,82 +66,121 @@ export function NavbarClient({
   }, [open]);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    setScrollReady(true);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setMenu(null);
+        setSearchOpen(false);
+        setOpen(false);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.clearTimeout(closeTimer.current);
+    };
   }, []);
 
   if (pathname.startsWith("/admin")) {
     return null;
   }
 
+  const iconLinkClass =
+    "inline-flex size-8 items-center justify-center text-foreground/70 transition-colors duration-300 hover:text-foreground";
+
+  const activeMega = NAV_ITEMS.find((item) => item.id === menu && item.mega);
+
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 border-b transition-[background-color,border-color,box-shadow] duration-300",
-        scrollReady && scrolled
-          ? "border-border/70 bg-background/94 shadow-[0_12px_32px_-28px_oklch(0.3_0.04_150_/0.5)] backdrop-blur-md"
-          : "border-border/40 bg-background/80 backdrop-blur-sm",
+        "z-50 border-b border-border bg-card text-foreground",
+        isHome ? "fixed inset-x-0 top-9" : "sticky top-0",
       )}
+      onMouseLeave={scheduleClose}
+      onMouseEnter={cancelClose}
     >
       <nav
         aria-label="Primary navigation"
-        className="mx-auto flex h-[4.5rem] max-w-7xl items-center gap-6 px-6 lg:gap-12"
+        className="mx-auto grid h-[4.5rem] max-w-[80rem] grid-cols-[auto_1fr_auto] items-center gap-4 px-6 sm:px-8 lg:px-10"
       >
         <Link
           href="/"
-          className="font-heading text-[1.85rem] tracking-tight transition-opacity duration-300 hover:opacity-75"
+          className="font-heading text-[1.75rem] tracking-[-0.01em] text-foreground transition-opacity duration-300 hover:opacity-75"
         >
           Shramasa
         </Link>
 
-        <div className="hidden items-center gap-9 md:flex">
-          {navigation.map((item) => {
-            const active =
-              item.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "relative py-1 text-[0.72rem] tracking-[0.18em] uppercase transition-colors duration-300",
-                  active
-                    ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {item.label}
-                <span
-                  className={cn(
-                    "absolute inset-x-0 -bottom-0.5 mx-auto h-px bg-primary transition-all duration-300",
-                    active ? "w-full opacity-100" : "w-0 opacity-0",
-                  )}
-                />
-              </Link>
-            );
-          })}
-          {isAdmin ? (
-            <Link
-              href="/admin"
-              className="text-[0.72rem] tracking-[0.18em] text-muted-foreground uppercase transition-colors duration-300 hover:text-foreground"
-            >
-              Admin
-            </Link>
-          ) : null}
+        <div className="hidden justify-center lg:flex">
+          <ul className="flex items-center gap-7 xl:gap-9">
+            {NAV_ITEMS.map((item) => {
+              const active =
+                item.id === "bestsellers"
+                  ? false
+                  : item.href === "/shop"
+                    ? pathname === "/shop" || pathname.startsWith("/shop/")
+                    : item.href.startsWith("/shop?")
+                      ? false
+                      : pathname === item.href ||
+                        (item.href !== "/" && pathname.startsWith(item.href));
+              const isOpen = menu === item.id;
+
+              return (
+                <li
+                  key={item.id}
+                  onMouseEnter={() =>
+                    item.mega ? openMenu(item.id) : setMenu(null)
+                  }
+                >
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      "relative py-1 text-[0.68rem] font-medium tracking-[0.12em] uppercase transition-colors duration-300",
+                      active || isOpen
+                        ? "text-foreground"
+                        : "text-foreground/65 hover:text-foreground",
+                    )}
+                    aria-expanded={item.mega ? isOpen : undefined}
+                    aria-haspopup={item.mega ? "true" : undefined}
+                    aria-controls={item.mega ? `mega-${item.id}` : undefined}
+                  >
+                    {item.label}
+                    <span
+                      className={cn(
+                        "absolute inset-x-0 -bottom-0.5 mx-auto h-px bg-foreground/70 transition-[width,opacity] duration-300 ease-out",
+                        active || isOpen
+                          ? "w-full opacity-100"
+                          : "w-0 opacity-0",
+                      )}
+                    />
+                  </Link>
+                </li>
+              );
+            })}
+            {isAdmin ? (
+              <li>
+                <Link
+                  href="/admin"
+                  className="text-[0.68rem] font-medium tracking-[0.12em] text-foreground/65 uppercase transition-colors duration-300 hover:text-foreground"
+                >
+                  Admin
+                </Link>
+              </li>
+            ) : null}
+          </ul>
         </div>
 
-        <div className="ml-auto flex items-center gap-1">
-          <Link
-            href="/shop"
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
             className={cn(iconLinkClass, "hidden sm:inline-flex")}
             aria-label="Search products"
+            aria-expanded={searchOpen}
+            onClick={() => {
+              setMenu(null);
+              setSearchOpen((value) => !value);
+            }}
           >
             <Search aria-hidden="true" className="size-[1.05rem]" />
-          </Link>
+          </button>
           <Link
             href="/wishlist"
             className={iconLinkClass}
@@ -132,15 +190,10 @@ export function NavbarClient({
           </Link>
           <Link
             href={isAuthenticated ? "/account" : "/login"}
-            className={cn(
-              "hidden items-center gap-1.5 rounded-sm px-2.5 py-1.5 text-foreground transition-colors duration-300 hover:bg-muted hover:text-foreground sm:inline-flex",
-            )}
+            className={cn(iconLinkClass, "hidden sm:inline-flex")}
             aria-label={isAuthenticated ? "Account" : "Log in"}
           >
             <UserRound aria-hidden="true" className="size-[1.05rem]" />
-            <span className="text-[0.72rem] tracking-[0.14em] uppercase">
-              {isAuthenticated ? "Account" : "Login"}
-            </span>
           </Link>
           <Link
             href="/cart"
@@ -153,7 +206,7 @@ export function NavbarClient({
           >
             <ShoppingBag aria-hidden="true" className="size-[1.05rem]" />
             {cartCount > 0 ? (
-              <span className="absolute top-1.5 right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[0.6rem] font-medium text-primary-foreground">
+              <span className="absolute top-1 right-0.5 min-w-3 text-center text-[0.58rem] font-medium text-foreground tabular-nums">
                 {cartCount > 99 ? "99+" : cartCount}
               </span>
             ) : null}
@@ -162,46 +215,131 @@ export function NavbarClient({
             type="button"
             variant="ghost"
             size="icon"
-            className="rounded-sm md:hidden"
+            className="text-foreground hover:bg-secondary hover:text-foreground lg:hidden"
             aria-expanded={open}
             aria-controls="mobile-menu"
             aria-label={open ? "Close menu" : "Open menu"}
             onClick={() => setOpen((value) => !value)}
           >
-            {open ? (
-              <X aria-hidden="true" />
-            ) : (
-              <Menu aria-hidden="true" />
-            )}
+            {open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
           </Button>
         </div>
       </nav>
 
+      {searchOpen ? (
+        <div className="border-t border-border bg-card px-6 py-4">
+          <form
+            className="mx-auto flex max-w-[80rem] items-center gap-3"
+            onSubmit={(event) => {
+              event.preventDefault();
+              const next = query.trim();
+              setSearchOpen(false);
+              router.push(
+                next ? `/shop?q=${encodeURIComponent(next)}` : "/shop",
+              );
+            }}
+          >
+            <label htmlFor={searchInputId} className="sr-only">
+              Search the collection
+            </label>
+            <input
+              id={searchInputId}
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              autoFocus
+              placeholder="Search the collection"
+              className="h-11 w-full border-0 bg-transparent text-base outline-none placeholder:text-muted-foreground"
+            />
+            <button
+              type="submit"
+              className="text-[0.72rem] tracking-[0.16em] text-foreground uppercase transition-colors duration-300 hover:text-foreground/70"
+            >
+              Search
+            </button>
+          </form>
+        </div>
+      ) : null}
+
+      <div className="hidden" aria-hidden="true">
+        {NAV_ITEMS.map((item) =>
+          item.mega?.featured ? (
+            <img key={item.id} src={item.mega.featured.image} alt="" />
+          ) : null,
+        )}
+      </div>
+
+      {activeMega ? (
+        <div className="hidden lg:block">
+          <MegaMenu item={activeMega} />
+        </div>
+      ) : null}
+
       {open ? (
         <div
           id="mobile-menu"
-          className="border-t border-border bg-background px-6 py-10 md:hidden"
+          className="max-h-[calc(100svh-7.5rem)] overflow-y-auto border-t border-border bg-card px-6 py-8 lg:hidden"
         >
-          <div className="flex flex-col gap-6">
-            {navigation.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="font-heading text-3xl tracking-tight text-foreground"
+          <div className="flex flex-col gap-1">
+            {NAV_ITEMS.map((item) => (
+              <div
+                key={item.id}
+                className="border-b border-border py-4 last:border-b-0"
               >
-                {item.label}
-              </Link>
+                <div className="flex items-center justify-between gap-3">
+                  <Link
+                    href={item.href}
+                    className="font-heading text-2xl tracking-tight text-foreground"
+                  >
+                    {item.label}
+                  </Link>
+                  {item.mega ? (
+                    <button
+                      type="button"
+                      className="text-[0.68rem] tracking-[0.16em] text-muted-foreground uppercase"
+                      aria-expanded={mobileSection === item.id}
+                      onClick={() =>
+                        setMobileSection((current) =>
+                          current === item.id ? null : item.id,
+                        )
+                      }
+                    >
+                      {mobileSection === item.id ? "Close" : "Explore"}
+                    </button>
+                  ) : null}
+                </div>
+                {item.mega && mobileSection === item.id ? (
+                  <div className="mt-4 grid gap-6 pb-2">
+                    {item.mega.columns.map((column) => (
+                      <div key={column.title}>
+                        <p className="eyebrow">{column.title}</p>
+                        <ul className="mt-2.5 space-y-2">
+                          {column.links.map((link) => (
+                            <li key={`${column.title}-${link.href}-${link.label}`}>
+                              <Link
+                                href={link.href}
+                                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                              >
+                                {link.label}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
             ))}
             <Link
               href={isAuthenticated ? "/account" : "/login"}
-              className="font-heading text-3xl tracking-tight text-foreground"
+              className="pt-4 font-heading text-2xl tracking-tight text-foreground"
             >
               {isAuthenticated ? "Account" : "Login"}
             </Link>
             {isAdmin ? (
               <Link
                 href="/admin"
-                className="font-heading text-3xl tracking-tight text-foreground"
+                className="pt-3 font-heading text-2xl tracking-tight text-foreground"
               >
                 Admin
               </Link>

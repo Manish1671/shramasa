@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ProductCard } from "@/components/commerce/ProductCard";
 import { ProductDetailSections } from "@/components/commerce/ProductDetailSections";
 import { ProductPurchaseControls } from "@/components/commerce/ProductPurchaseControls";
+import { ProductStage } from "@/components/commerce/ProductStage";
 import { apiFetch, getAccessToken } from "@/lib/api";
 import { formatInr } from "@/lib/format";
 import { productImagePath } from "@/lib/product-image";
@@ -23,14 +23,30 @@ const TRUST_ITEMS = [
   "Secure checkout",
   "Easy returns",
   "Carefully packed",
-  "Everyday delivery",
+  "Ships across India",
 ] as const;
 
-const DELIVERY_COPY =
-  "Orders ship across India via cash on delivery. Eligible unopened products may be returned according to our returns policy.";
+const DELIVERY_COPY = (
+  <>
+    Complimentary shipping on every order within India. Pay online with Razorpay
+    or choose Cash on Delivery. Unopened products may be returned within 7 days
+    of delivery. See{" "}
+    <Link href="/care" className="underline underline-offset-4">
+      customer care
+    </Link>
+    .
+  </>
+);
 
-const FAQ_COPY =
-  "Demo note: For ingredient sensitivities or routine questions, write to us from the Contact page. We respond with considered guidance — never medical advice.";
+const FAQ_COPY = (
+  <>
+    For ingredient sensitivities or routine questions, write to us from the{" "}
+    <Link href="/contact" className="underline underline-offset-4">
+      Contact page
+    </Link>
+    . We respond with considered guidance — never medical advice.
+  </>
+);
 
 export async function generateMetadata({
   params,
@@ -169,8 +185,8 @@ export default async function ProductDetailsPage({
   const inStock = product.stock > 0;
 
   return (
-    <main className="px-6 py-10 sm:py-14 lg:py-20">
-      <div className="mx-auto max-w-7xl">
+    <main className="px-6 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
+      <div className="mx-auto max-w-[64rem]">
         <nav
           aria-label="Breadcrumb"
           className="text-[0.68rem] tracking-[0.08em] text-muted-foreground"
@@ -179,7 +195,7 @@ export default async function ProductDetailsPage({
             <li>
               <Link
                 href="/"
-                className="transition-colors duration-300 hover:text-primary"
+                className="transition-colors duration-300 hover:text-foreground"
               >
                 Home
               </Link>
@@ -190,7 +206,7 @@ export default async function ProductDetailsPage({
             <li>
               <Link
                 href="/shop"
-                className="transition-colors duration-300 hover:text-primary"
+                className="transition-colors duration-300 hover:text-foreground"
               >
                 Shop
               </Link>
@@ -201,7 +217,7 @@ export default async function ProductDetailsPage({
             <li>
               <Link
                 href={`/shop?category=${encodeURIComponent(product.category.slug)}`}
-                className="transition-colors duration-300 hover:text-primary"
+                className="transition-colors duration-300 hover:text-foreground"
               >
                 {product.category.name}
               </Link>
@@ -213,37 +229,30 @@ export default async function ProductDetailsPage({
           </ol>
         </nav>
 
-        <section className="mt-8 grid items-start gap-8 sm:gap-10 lg:mt-12 lg:grid-cols-[1.14fr_0.86fr] lg:gap-14 xl:gap-16">
-          <div className="lg:sticky lg:top-28">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-[linear-gradient(165deg,oklch(0.955_0.014_95)_0%,oklch(0.92_0.02_145)_100%)] ring-1 ring-border/50">
-              <div className="absolute inset-0 pdp-image-enter">
-                <Image
-                  key={product.slug}
-                  src={imageSrc}
-                  alt={imageAlt}
-                  fill
-                  priority
-                  unoptimized
-                  sizes="(min-width: 1024px) 52vw, 100vw"
-                  className="object-contain object-center p-5 sm:p-8 lg:p-9"
-                />
-              </div>
-            </div>
+        <section className="mt-8 grid items-start gap-8 lg:mt-10 lg:grid-cols-2 lg:gap-12 xl:gap-16">
+          <div className="w-full min-w-0">
+            <ProductStage
+              src={imageSrc}
+              alt={imageAlt}
+              slug={product.slug}
+              priority
+            />
 
             {product.images.length > 1 && (
-              <div className="mt-4 grid grid-cols-4 gap-3">
-                {product.images.map((image) => (
+              <div className="mt-3 flex gap-2">
+                {product.images.map((image, index) => (
                   <div
                     key={image.id}
-                    className="relative aspect-square overflow-hidden rounded-sm bg-[oklch(0.95_0.012_92)] ring-1 ring-border/50"
+                    className={
+                      index === 0
+                        ? "relative aspect-square w-[4.25rem] overflow-hidden border border-foreground/70 bg-card"
+                        : "relative aspect-square w-[4.25rem] overflow-hidden border border-border bg-card"
+                    }
                   >
-                    <Image
+                    <img
                       src={productImagePath(product.slug)}
                       alt={image.altText ?? product.name}
-                      fill
-                      unoptimized
-                      sizes="120px"
-                      className="object-contain object-center p-2"
+                      className="absolute inset-0 h-full w-full object-contain object-center p-1"
                     />
                   </div>
                 ))}
@@ -251,27 +260,33 @@ export default async function ProductDetailsPage({
             )}
           </div>
 
-          <div className="lg:py-2">
-            <p className="text-[0.68rem] font-medium tracking-[0.22em] text-primary/75 uppercase">
-              {product.category.name}
-            </p>
+          <div className="flex w-full min-w-0 flex-col lg:pt-1">
+            <p className="eyebrow">{product.category.name}</p>
 
-            <h1 className="mt-3 font-heading text-[2.4rem] leading-[1.06] tracking-tight text-balance sm:mt-4 sm:text-[3.15rem] lg:text-[3.55rem] lg:leading-[1.04]">
+            <h1 className="mt-3 font-heading text-[1.85rem] leading-[1.15] tracking-[-0.02em] text-balance sm:text-[2.15rem]">
               {product.name}
             </h1>
 
-            <div className="mt-7 flex flex-wrap items-baseline gap-x-3.5 gap-y-1 sm:mt-8">
-              <p className="font-heading text-[2.05rem] tracking-tight sm:text-[2.35rem]">
+            <p className="mt-4 text-[0.92rem] leading-7 text-muted-foreground">
+              {product.description}
+            </p>
+
+            <div className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <p className="text-[1.35rem] tabular-nums tracking-[0.01em]">
                 {formatInr(product.price)}
               </p>
               {product.compareAtPrice ? (
-                <p className="text-[0.95rem] text-muted-foreground line-through sm:text-base">
+                <p className="text-[0.9rem] text-muted-foreground line-through tabular-nums">
                   {formatInr(product.compareAtPrice)}
                 </p>
               ) : null}
             </div>
 
-            <div className="mt-4 flex items-center gap-2.5 text-sm text-muted-foreground sm:mt-5">
+            <p className="mt-2 text-[0.78rem] text-muted-foreground">
+              MRP inclusive of all taxes
+            </p>
+
+            <div className="mt-4 flex items-center gap-2.5 text-sm text-muted-foreground">
               <span
                 className={`size-1.5 rounded-full ${
                   inStock ? "bg-primary" : "bg-muted-foreground/70"
@@ -281,30 +296,18 @@ export default async function ProductDetailsPage({
               <span>{stockLabel(product.stock)}</span>
             </div>
 
-            <div className="editorial-rule mt-7 sm:mt-8" />
-
-            <p className="mt-6 max-w-xl text-[0.95rem] leading-7 text-muted-foreground sm:mt-7 sm:text-base sm:leading-[1.85]">
-              {product.description}
-            </p>
-
             <ProductPurchaseControls
               productId={product.id}
               stock={product.stock}
               initialWishlisted={wishlisted}
             />
 
-            <ul className="mt-9 grid grid-cols-1 gap-2.5 border-t border-border/55 pt-7 sm:mt-10 sm:grid-cols-2 sm:gap-3 sm:pt-8">
+            <ul className="mt-6 grid grid-cols-2 gap-px border border-border bg-border">
               {TRUST_ITEMS.map((item) => (
                 <li
                   key={item}
-                  className="flex items-center gap-2.5 text-[0.78rem] tracking-[0.04em] text-muted-foreground"
+                  className="bg-background px-3 py-3 text-center text-[0.65rem] tracking-[0.12em] text-muted-foreground uppercase"
                 >
-                  <span
-                    className="font-heading text-sm leading-none text-primary/55"
-                    aria-hidden="true"
-                  >
-                    ✓
-                  </span>
                   {item}
                 </li>
               ))}
@@ -313,41 +316,29 @@ export default async function ProductDetailsPage({
         </section>
 
         <ProductDetailSections
-          benefits={
-            product.description ||
-            "Designed to support everyday comfort and a refined finish."
-          }
-          ingredients={
-            product.ingredients ?? "Ingredient information is coming soon."
-          }
-          howToUse={product.howToUse ?? "Usage instructions are coming soon."}
+          ingredients={product.ingredients?.trim() || null}
+          howToUse={product.howToUse?.trim() || null}
           delivery={DELIVERY_COPY}
           faq={FAQ_COPY}
         />
 
         {related.length > 0 && (
           <section
-            className="mt-4 border-t border-border/50 pt-16 sm:mt-6 sm:pt-20 lg:pt-24"
+            className="mt-16 border-t border-border pt-14 sm:mt-20 sm:pt-16"
             aria-labelledby="complete-ritual"
           >
             <div className="max-w-2xl">
-              <p className="text-[0.65rem] font-medium tracking-[0.22em] text-primary/70 uppercase">
-                Continue the ritual
-              </p>
-              <h2
-                id="complete-ritual"
-                className="mt-3 font-heading text-3xl tracking-tight sm:text-4xl lg:text-[2.75rem]"
-              >
+              <p className="eyebrow">Continue the ritual</p>
+              <h2 id="complete-ritual" className="type-h3 mt-3">
                 Complete your ritual
               </h2>
-              <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground sm:text-[0.95rem] sm:leading-8">
-                Pair your essential with thoughtful complementary care for a
-                considered routine.
+              <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground">
+                Pair this essential with complementary care for a considered
+                routine.
               </p>
-              <div className="editorial-rule mt-6" />
             </div>
 
-            <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 sm:mt-12 sm:grid-cols-2 sm:gap-y-12 lg:grid-cols-3">
+            <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((recommendation) => (
                 <ProductCard
                   key={recommendation.id}

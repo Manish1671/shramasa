@@ -10,34 +10,32 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <main className="px-6 py-16 sm:py-20 lg:py-24">
-      <div className="mx-auto max-w-7xl">
-        <div className="max-w-2xl">
-          <p className="text-sm font-medium tracking-[0.18em] text-muted-foreground uppercase">
-            Contact
-          </p>
-          <h1 className="mt-4 font-heading text-4xl font-semibold tracking-tight sm:text-5xl">
+    <main className="px-6 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24">
+      <div className="mx-auto max-w-[80rem]">
+        <div className="max-w-2xl border-b border-border pb-12">
+          <p className="eyebrow">Contact</p>
+          <h1 className="type-h2 mt-4 text-balance">
             We would love to hear from you
           </h1>
-          <p className="mt-4 text-base leading-7 text-muted-foreground">
+          <p className="type-body mt-6">
             Reach out for product guidance, order help, or brand collaborations
             using the form. We will respond as soon as we can.
           </p>
         </div>
 
-        <div className="mt-12 grid items-start gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-          <aside className="space-y-8 rounded-sm border border-border bg-muted/30 p-6 sm:p-8">
+        <div className="mt-14 grid items-start gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-16">
+          <aside className="space-y-9 border-t border-border pt-8">
             <div>
-              <h2 className="text-sm font-semibold tracking-wide">How to reach us</h2>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              <h2 className="eyebrow">How to reach us</h2>
+              <p className="mt-3 text-sm leading-7 text-muted-foreground">
                 Use the contact form for product questions, order support, or
-                partnership enquiries. A public mailbox will be listed here once
-                it is configured.
+                partnership enquiries. Messages reach the Shramasa team
+                directly.
               </p>
             </div>
             <div>
-              <h2 className="text-sm font-semibold tracking-wide">Response time</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
+              <h2 className="eyebrow">Response time</h2>
+              <p className="mt-3 text-sm leading-7 text-muted-foreground">
                 We aim to reply within 1–2 business days.
               </p>
             </div>

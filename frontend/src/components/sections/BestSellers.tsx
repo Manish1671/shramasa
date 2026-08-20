@@ -1,6 +1,6 @@
-import Link from "next/link";
-
 import { ProductCard } from "@/components/commerce/ProductCard";
+import { QuietLink } from "@/components/layout/QuietLink";
+import { Section, SectionHeader } from "@/components/layout/Section";
 import { apiFetch } from "@/lib/api";
 import type { Product } from "@/lib/types";
 
@@ -24,51 +24,37 @@ export async function BestSellers() {
     ).filter((product): product is Product => Boolean(product));
 
     products =
-      preferred.length >= 4
-        ? preferred.slice(0, 4)
-        : active.slice(0, 4);
+      preferred.length >= 4 ? preferred.slice(0, 4) : active.slice(0, 4);
   } catch {
     products = [];
   }
 
   return (
-    <section className="border-b border-border/45 bg-[oklch(0.97_0.01_92)] px-6 py-16 sm:py-20 lg:py-24">
-      <div className="reveal mx-auto max-w-7xl">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-          <div className="max-w-xl">
-            <h2 className="font-heading text-3xl tracking-tight sm:text-4xl lg:text-[2.75rem]">
-              Bestsellers
-            </h2>
-            <p className="mt-3 text-sm leading-7 text-muted-foreground sm:text-base">
-              Everyday essentials, thoughtfully chosen.
-            </p>
-          </div>
-          <Link
-            href="/shop"
-            className="group inline-flex items-center gap-2 text-sm tracking-wide text-foreground/80 transition-colors duration-300 hover:text-primary"
-          >
-            Shop all
-            <span
-              aria-hidden="true"
-              className="transition-transform duration-300 group-hover:translate-x-0.5 motion-reduce:transform-none"
-            >
-              →
-            </span>
-          </Link>
-        </div>
+    <Section id="bestsellers" className="scroll-mt-24">
+      <div className="reveal">
+        <SectionHeader
+          eyebrow="Most requested"
+          title="Bestsellers"
+          description="Four essentials that begin a considered daily ritual."
+          action={<QuietLink href="/shop">Shop all</QuietLink>}
+        />
 
         {products.length === 0 ? (
-          <p className="mt-12 text-sm text-muted-foreground">
+          <p className="mt-14 text-sm text-muted-foreground">
             Bestsellers will appear here once products are available.
           </p>
         ) : (
-          <div className="mt-10 grid grid-cols-1 gap-x-7 gap-y-10 sm:mt-12 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:mt-12 lg:grid-cols-4">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                showDescription={false}
+              />
             ))}
           </div>
         )}
       </div>
-    </section>
+    </Section>
   );
 }

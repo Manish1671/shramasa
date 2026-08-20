@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { AddressesModule } from './addresses/addresses.module';
 import { AdminModule } from './admin/admin.module';
 import { CartModule } from './cart/cart.module';
+import { ContactModule } from './contact/contact.module';
 import { OrdersModule } from './orders/orders.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProductsModule } from './products/products.module';
@@ -23,6 +24,7 @@ import { WishlistModule } from './wishlist/wishlist.module';
     WishlistModule,
     AddressesModule,
     OrdersModule,
+    ContactModule,
     AdminModule,
   ],
   controllers: [AppController],

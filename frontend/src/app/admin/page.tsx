@@ -57,6 +57,11 @@ export default async function AdminDashboardPage() {
       value: formatInr(stats.totalRevenue),
       hint: "Excludes cancelled",
     },
+    {
+      label: "Inbox",
+      value: String(stats.unreadContactMessages),
+      hint: "Unread contact messages",
+    },
   ];
 
   return (
@@ -85,6 +90,12 @@ export default async function AdminDashboardPage() {
             className={buttonVariants({ variant: "outline", size: "sm" })}
           >
             View orders
+          </Link>
+          <Link
+            href="/admin/messages"
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+          >
+            View messages
           </Link>
         </div>
       </div>

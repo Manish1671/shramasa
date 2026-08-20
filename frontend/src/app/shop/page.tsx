@@ -37,22 +37,15 @@ export default async function ShopPage() {
   const products = allProducts.filter((product) => product.isActive);
 
   return (
-    <main className="px-6 py-14 sm:py-20 lg:py-24">
-      <div className="mx-auto max-w-7xl">
-        <div className="max-w-3xl border-b border-border/70 pb-10">
-          <p className="text-xs font-medium tracking-[0.22em] text-primary/70 uppercase">
-            Collection
-          </p>
-          <h1 className="mt-4 font-heading text-4xl tracking-tight sm:text-5xl lg:text-6xl">
-            Shop Shramasa
-          </h1>
-          <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground">
-            Explore thoughtful skincare, haircare, and body care essentials —
-            edited for calm rituals and lasting comfort.
-          </p>
-        </div>
-
-        <Suspense fallback={<p className="mt-12 text-sm text-muted-foreground">Loading products…</p>}>
+    <main className="px-6 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24">
+      <div className="mx-auto max-w-[80rem]">
+        <Suspense
+          fallback={
+            <p className="mt-4 text-sm text-muted-foreground">
+              Loading products…
+            </p>
+          }
+        >
           <ShopCatalog products={products} wishlistIds={wishlistIds} />
         </Suspense>
       </div>

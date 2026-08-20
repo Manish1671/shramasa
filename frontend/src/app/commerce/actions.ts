@@ -237,3 +237,28 @@ export async function placeOrderAction(input: {
     return handleError<Order>(error);
   }
 }
+
+export async function verifyRazorpayPaymentAction(input: {
+  orderId: string;
+  razorpayOrderId: string;
+  razorpayPaymentId: string;
+  razorpaySignature: string;
+}): Promise<ActionResult<Order>> {
+  try {
+    const order = await apiFetch<Order>(
+      `/orders/${encodeURIComponent(input.orderId)}/verify-payment`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          razorpayOrderId: input.razorpayOrderId,
+          razorpayPaymentId: input.razorpayPaymentId,
+          razorpaySignature: input.razorpaySignature,
+        }),
+      },
+    );
+    revalidateCommerce();
+    return success(order);
+  } catch (error) {
+    return handleError<Order>(error);
+  }
+}

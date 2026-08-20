@@ -604,7 +604,36 @@ const products: SeedProduct[] = [
 
 const TARGET_SLUGS = new Set(products.map((product) => product.slug));
 
+async function backfillProductCopy(): Promise<void> {
+  let updated = 0;
+  let missing = 0;
+
+  for (const product of products) {
+    const result = await prisma.product.updateMany({
+      where: { slug: product.slug },
+      data: {
+        ingredients: product.ingredients,
+        howToUse: product.howToUse,
+      },
+    });
+
+    if (result.count === 0) {
+      missing += 1;
+    } else {
+      updated += 1;
+    }
+  }
+
+  console.info(
+    `Updated ingredients and how-to on ${updated} product(s). ${missing} slug(s) not in the database.`,
+  );
+}
+
 async function main(): Promise<void> {
+  if (process.argv.includes('--copy-only')) {
+    await backfillProductCopy();
+    return;
+  }
   if (products.length !== 38) {
     throw new Error(`Expected 38 products in seed data, found ${products.length}`);
   }

@@ -29,7 +29,7 @@ export default async function CartPage() {
     return (
       <main className="flex flex-1 items-center justify-center px-6 py-24">
         <div className="mx-auto max-w-md text-center">
-          <h1 className="text-3xl font-semibold tracking-tight">
+          <h1 className="type-h3">
             Cart unavailable
           </h1>
           <p className="mt-4 text-muted-foreground">

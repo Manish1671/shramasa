@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
@@ -9,6 +8,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { ProductThumb } from "@/components/commerce/ProductThumb";
 import { ApiError, apiFetch, getAccessToken } from "@/lib/api";
 import { formatInr, formatOrderStatus } from "@/lib/format";
 import type { Order } from "@/lib/types";
@@ -55,7 +55,7 @@ export default async function OrderDetailsPage({
     return (
       <main className="flex flex-1 items-center justify-center px-6 py-24">
         <div className="mx-auto max-w-md text-center">
-          <h1 className="text-3xl font-semibold tracking-tight">
+          <h1 className="type-h3">
             Order unavailable
           </h1>
           <p className="mt-4 text-muted-foreground">
@@ -72,7 +72,7 @@ export default async function OrderDetailsPage({
         <p className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
           Order details
         </p>
-        <h1 className="mt-3 text-4xl font-semibold tracking-tight">
+        <h1 className="type-h2 mt-3">
           Order #{order.id.slice(-8).toUpperCase()}
         </h1>
         <p className="mt-4 text-muted-foreground">
@@ -90,26 +90,18 @@ export default async function OrderDetailsPage({
               <h2 className="text-xl font-semibold">Items</h2>
             </CardHeader>
             <CardContent className="space-y-5">
-              {order.items.map((item) => {
-                const image = item.product.images[0];
-                return (
+              {order.items.map((item) => (
                   <div
                     key={item.id}
                     className="grid grid-cols-[4.5rem_1fr_auto] items-center gap-4"
                   >
-                    <Link
-                      href={`/shop/${item.product.slug}`}
-                      className="relative aspect-square overflow-hidden rounded-xl bg-muted"
-                    >
-                      {image ? (
-                        <Image
-                          src={image.url}
-                          alt={image.altText ?? item.productName}
-                          fill
-                          sizes="72px"
-                          className="object-cover"
-                        />
-                      ) : null}
+                    <Link href={`/shop/${item.product.slug}`} className="w-[4.5rem]">
+                      <ProductThumb
+                        slug={item.product.slug}
+                        alt={item.productName}
+                        sizes="72px"
+                        className="w-[4.5rem]"
+                      />
                     </Link>
                     <div>
                       <Link
@@ -126,8 +118,7 @@ export default async function OrderDetailsPage({
                       {formatInr(item.lineTotal)}
                     </span>
                   </div>
-                );
-              })}
+                ))}
             </CardContent>
           </Card>
 

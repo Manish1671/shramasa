@@ -31,7 +31,7 @@ export type SafeUser = {
   id: string;
   name: string;
   email: string;
-  phone: string;
+  phone: string | null;
   role: "CUSTOMER" | "ADMIN";
   createdAt: string;
   updatedAt: string;
@@ -116,10 +116,18 @@ export type Order = {
   shipping: string;
   discount: string;
   total: string;
+  razorpayOrderId?: string | null;
+  razorpayPaymentId?: string | null;
   createdAt: string;
   updatedAt: string;
   address: Address;
   items: OrderItem[];
+  razorpay?: {
+    keyId: string;
+    orderId: string;
+    amount: number;
+    currency: string;
+  };
 };
 
 export type AdminStats = {
@@ -128,7 +136,17 @@ export type AdminStats = {
   totalOrders: number;
   pendingOrders: number;
   deliveredOrders: number;
+  unreadContactMessages: number;
   totalRevenue: string;
+};
+
+export type ContactMessage = {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  readAt: string | null;
+  createdAt: string;
 };
 
 export type AdminProduct = Product & {

@@ -8,6 +8,8 @@ export type ConcernGroup = "face" | "hair" | "body";
 export type Concern = {
   slug: string;
   name: string;
+  /** Short tile caption for the homepage grid. */
+  tileLabel: string;
   description: string;
   group: ConcernGroup;
   /** Existing catalog product slugs for this concern. */
@@ -24,26 +26,46 @@ export function shopCategoryHref(categorySlug: string): string {
   return `/shop?category=${encodeURIComponent(categorySlug)}`;
 }
 
+export function concernPhotoPath(slug: string): string {
+  return `/concerns/${slug}.jpg`;
+}
+
 export const CONCERNS: Concern[] = [
-  {
-    slug: "acne-breakouts",
-    name: "Acne & Breakouts",
-    description: "Targeted care for blemish-prone skin.",
-    group: "face",
-    productSlugs: ["salicylic-acid-cleanser", "acne-spot-gel"],
-    imageSlug: "acne-spot-gel",
-  },
   {
     slug: "pigmentation-dark-spots",
     name: "Pigmentation & Dark Spots",
+    tileLabel: "Uneven tone",
     description: "Brightening care for a more even-looking complexion.",
     group: "face",
     productSlugs: ["vitamin-c-serum", "niacinamide-serum"],
     imageSlug: "vitamin-c-serum",
   },
   {
+    slug: "acne-breakouts",
+    name: "Acne & Breakouts",
+    tileLabel: "Acne",
+    description: "Targeted care for blemish-prone skin.",
+    group: "face",
+    productSlugs: ["salicylic-acid-cleanser", "acne-spot-gel"],
+    imageSlug: "acne-spot-gel",
+  },
+  {
+    slug: "oiliness",
+    name: "Oiliness",
+    tileLabel: "Oiliness",
+    description: "Balancing care for shine-prone, congested-feeling skin.",
+    group: "face",
+    productSlugs: [
+      "salicylic-acid-cleanser",
+      "niacinamide-serum",
+      "aha-bha-exfoliating-serum",
+    ],
+    imageSlug: "niacinamide-serum",
+  },
+  {
     slug: "dullness-glow",
     name: "Dullness & Glow",
+    tileLabel: "Glow",
     description: "Daily essentials for fresh, luminous-looking skin.",
     group: "face",
     productSlugs: ["vitamin-c-serum", "radiance-face-mask"],
@@ -52,6 +74,7 @@ export const CONCERNS: Concern[] = [
   {
     slug: "dryness-dehydration",
     name: "Dryness & Dehydration",
+    tileLabel: "Dryness",
     description: "Comforting hydration for dry, thirsty skin.",
     group: "face",
     productSlugs: [
@@ -64,6 +87,7 @@ export const CONCERNS: Concern[] = [
   {
     slug: "barrier-sensitivity",
     name: "Barrier & Sensitivity",
+    tileLabel: "Barrier",
     description: "Gentle care for a supported, comfortable skin barrier.",
     group: "face",
     productSlugs: [
@@ -74,20 +98,9 @@ export const CONCERNS: Concern[] = [
     imageSlug: "ceramide-moisturizer",
   },
   {
-    slug: "oiliness",
-    name: "Oiliness",
-    description: "Balancing care for shine-prone, congested-feeling skin.",
-    group: "face",
-    productSlugs: [
-      "salicylic-acid-cleanser",
-      "niacinamide-serum",
-      "aha-bha-exfoliating-serum",
-    ],
-    imageSlug: "niacinamide-serum",
-  },
-  {
     slug: "sun-protection",
     name: "Sun Protection",
+    tileLabel: "Sun",
     description: "Everyday protection for exposed skin.",
     group: "face",
     productSlugs: ["spf-50-sunscreen"],
@@ -96,6 +109,7 @@ export const CONCERNS: Concern[] = [
   {
     slug: "hair-fall-weakness",
     name: "Hair Fall & Weakness",
+    tileLabel: "Hair fall",
     description: "Care for stronger-looking, healthier hair.",
     group: "hair",
     productSlugs: [
@@ -108,6 +122,7 @@ export const CONCERNS: Concern[] = [
   {
     slug: "dandruff-scalp-care",
     name: "Dandruff & Scalp Care",
+    tileLabel: "Scalp",
     description: "Targeted care for a balanced, comfortable scalp.",
     group: "hair",
     productSlugs: ["anti-dandruff-shampoo", "scalp-balance-serum"],
@@ -116,6 +131,7 @@ export const CONCERNS: Concern[] = [
   {
     slug: "dry-damaged-hair",
     name: "Dry & Damaged Hair",
+    tileLabel: "Dry hair",
     description: "Restorative care for dry, stressed strands.",
     group: "hair",
     productSlugs: [
@@ -128,6 +144,7 @@ export const CONCERNS: Concern[] = [
   {
     slug: "frizz-smoothness",
     name: "Frizz & Smoothness",
+    tileLabel: "Frizz",
     description: "Conditioning care for smoother-looking hair.",
     group: "hair",
     productSlugs: ["nourishing-conditioner", "leave-in-conditioner"],
@@ -136,6 +153,7 @@ export const CONCERNS: Concern[] = [
   {
     slug: "body-dryness",
     name: "Body Dryness",
+    tileLabel: "Body dryness",
     description: "Comforting moisture for soft, supple body skin.",
     group: "body",
     productSlugs: ["hydrating-body-lotion", "whipped-body-cream"],
@@ -144,6 +162,7 @@ export const CONCERNS: Concern[] = [
   {
     slug: "underarm-care",
     name: "Underarm Care",
+    tileLabel: "Underarm",
     description: "Simple everyday care for fresh, comfortable underarms.",
     group: "body",
     productSlugs: ["fresh-balance-underarm-roll-on"],
@@ -154,10 +173,38 @@ export const CONCERNS: Concern[] = [
 export const CONCERN_GROUPS: {
   id: ConcernGroup;
   label: string;
+  heading: string;
+  description: string;
+  categorySlug: string;
+  shopLabel: string;
 }[] = [
-  { id: "face", label: "Face" },
-  { id: "hair", label: "Hair & Scalp" },
-  { id: "body", label: "Body" },
+  {
+    id: "face",
+    label: "Face",
+    heading: "Care for the complexion.",
+    description:
+      "From blemishes and dullness to barrier comfort and daily sun.",
+    categorySlug: "face-care",
+    shopLabel: "Shop face care",
+  },
+  {
+    id: "hair",
+    label: "Hair & Scalp",
+    heading: "Care for scalp and lengths.",
+    description:
+      "Balance, strength, and softness — from wash to leave-in.",
+    categorySlug: "hair-care",
+    shopLabel: "Shop hair care",
+  },
+  {
+    id: "body",
+    label: "Body",
+    heading: "Care beyond the face.",
+    description:
+      "Moisture and freshness for the daily shower-to-evening ritual.",
+    categorySlug: "body-care",
+    shopLabel: "Shop body care",
+  },
 ];
 
 export function getConcernBySlug(slug: string | undefined | null): Concern | undefined {

@@ -32,12 +32,11 @@ export default async function AccountPage() {
   }
 
   return (
-    <main className="px-6 py-16 sm:py-20 lg:py-24">
+    <main className="px-6 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24">
       <div className="mx-auto max-w-4xl">
-        <h1 className="font-heading text-4xl font-semibold tracking-tight sm:text-5xl">
-          Account
-        </h1>
-        <p className="mt-4 text-base text-muted-foreground">
+        <p className="eyebrow">Your space</p>
+        <h1 className="type-h2 mt-4">Account</h1>
+        <p className="type-body mt-5">
           Manage your profile, addresses, orders, and wishlist.
         </p>
 
@@ -81,7 +80,7 @@ export default async function AccountPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Phone</p>
-                <p className="mt-1 font-medium">{user.phone}</p>
+                <p className="mt-1 font-medium">{user.phone ?? "Not provided"}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Member since</p>

@@ -56,11 +56,12 @@ export function WishlistToggleButton({
     <div>
       <Button
         type="button"
-        variant="outline"
+        variant={showLabel ? "outline" : "ghost"}
         size={showLabel ? "lg" : "icon"}
         className={cn(
-          showLabel && "w-full",
-          "rounded-sm bg-background/90 backdrop-blur-sm transition-all duration-300 hover:scale-105",
+          showLabel
+            ? "w-full border-transparent bg-card/80 hover:bg-card"
+            : "size-8 border-0 bg-transparent shadow-none hover:bg-transparent",
           className,
         )}
         disabled={pending}
@@ -70,8 +71,8 @@ export function WishlistToggleButton({
       >
         <Heart
           className={cn(
-            "transition-transform duration-300",
-            saved && "fill-current scale-110 text-primary",
+            "transition-opacity duration-300",
+            saved && "fill-current",
             pending && "opacity-60",
           )}
           data-icon={showLabel ? "inline-start" : undefined}

@@ -4,6 +4,7 @@ import { BestSellers } from "@/components/sections/BestSellers";
 import { Categories } from "@/components/sections/Categories";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { Hero } from "@/components/sections/Hero";
+import { ManifestoStrip } from "@/components/sections/ManifestoStrip";
 import { RitualKits } from "@/components/sections/RitualKits";
 import { ShopByConcern } from "@/components/sections/ShopByConcern";
 import { ShramasaFormula } from "@/components/sections/ShramasaFormula";
@@ -19,10 +20,11 @@ export default function Home() {
   return (
     <main>
       <Hero />
-      <ShopByConcern />
-      <BestSellers />
+      <ManifestoStrip />
       <Categories />
+      <BestSellers />
       <RitualKits />
+      <ShopByConcern />
       <ShramasaFormula />
       <TrustStrip />
       <FinalCta />

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   ArrowLeft,
   LayoutDashboard,
+  Mail,
   Package,
   ShoppingBag,
 } from "lucide-react";
@@ -22,6 +23,7 @@ const links: AdminLink[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
+  { href: "/admin/messages", label: "Messages", icon: Mail },
 ];
 
 export function AdminNav() {

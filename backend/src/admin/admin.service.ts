@@ -33,6 +33,7 @@ export class AdminService {
       pendingOrders,
       deliveredOrders,
       revenueAggregate,
+      unreadContactMessages,
     ] = await Promise.all([
       this.prisma.product.count(),
       this.prisma.product.count({ where: { isActive: true } }),
@@ -55,6 +56,9 @@ export class AdminService {
           status: { not: OrderStatus.CANCELLED },
         },
       }),
+      this.prisma.contactMessage.count({
+        where: { readAt: null },
+      }),
     ]);
 
     return {
@@ -63,6 +67,7 @@ export class AdminService {
       totalOrders,
       pendingOrders,
       deliveredOrders,
+      unreadContactMessages,
       totalRevenue: decimalToString(
         revenueAggregate._sum.total ?? new Prisma.Decimal(0),
       ),
@@ -392,6 +397,32 @@ export class AdminService {
     });
 
     return this.formatAdminOrder(order);
+  }
+
+  listContactMessages() {
+    return this.prisma.contactMessage.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 200,
+    });
+  }
+
+  async markContactMessageRead(id: string) {
+    const existing = await this.prisma.contactMessage.findUnique({
+      where: { id },
+    });
+
+    if (!existing) {
+      throw new NotFoundException('Message not found');
+    }
+
+    if (existing.readAt) {
+      return existing;
+    }
+
+    return this.prisma.contactMessage.update({
+      where: { id },
+      data: { readAt: new Date() },
+    });
   }
 
   private async assertCategoryExists(categoryId: string) {

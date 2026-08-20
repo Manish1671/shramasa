@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 
+import { submitContactAction } from "@/app/contact/actions";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -39,8 +40,12 @@ export function ContactForm() {
       return;
     }
 
-    startTransition(() => {
-      // Frontend-only contact intake until a backend mailbox is configured.
+    startTransition(async () => {
+      const result = await submitContactAction({ name, email, message });
+      if (!result.ok) {
+        setError(result.error ?? "Unable to send your message.");
+        return;
+      }
       setSuccess(true);
     });
   }
@@ -49,10 +54,9 @@ export function ContactForm() {
     return (
       <Card>
         <CardContent className="py-10 text-center">
-          <h2 className="font-heading text-2xl font-semibold">Message ready</h2>
+          <h2 className="type-h3">Message received</h2>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">
-            Thanks for reaching out. This form is ready for mailbox integration
-            — for now, please email the placeholder address listed on this page.
+            Thank you — we have your message and will reply by email.
           </p>
         </CardContent>
       </Card>
@@ -62,7 +66,7 @@ export function ContactForm() {
   return (
     <Card>
       <CardHeader>
-        <h2 className="font-heading text-2xl font-semibold">Send a message</h2>
+        <h2 className="type-h3">Send a message</h2>
       </CardHeader>
       <CardContent>
         <form action={handleSubmit} className="space-y-5">

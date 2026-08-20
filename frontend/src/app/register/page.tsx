@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useActionState } from "react";
+import { Suspense, useActionState, useCallback, useState } from "react";
 
 import { registerAction } from "@/app/auth/actions";
 import { initialAuthState } from "@/app/auth/state";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,12 @@ function RegisterForm() {
     registerAction,
     initialAuthState,
   );
+  const [googleError, setGoogleError] = useState<string | null>(null);
+  const handleGoogleError = useCallback((message: string) => {
+    setGoogleError(message);
+  }, []);
+
+  const error = googleError ?? state.error;
 
   return (
     <Card className="w-full max-w-lg">
@@ -25,7 +32,7 @@ function RegisterForm() {
         <p className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
           Shramasa
         </p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight">
+        <h1 className="type-h3 mt-3">
           Create Account
         </h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -34,7 +41,11 @@ function RegisterForm() {
       </CardHeader>
 
       <CardContent>
-        <form action={formAction} className="grid gap-5 sm:grid-cols-2">
+        <form
+          action={formAction}
+          className="grid gap-5 sm:grid-cols-2"
+          onSubmit={() => setGoogleError(null)}
+        >
           {nextPath ? (
             <input type="hidden" name="next" value={nextPath} />
           ) : null}
@@ -109,14 +120,14 @@ function RegisterForm() {
             />
           </div>
 
-          {state.error && (
+          {error ? (
             <p
               role="alert"
               className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive sm:col-span-2"
             >
-              {state.error}
+              {error}
             </p>
-          )}
+          ) : null}
 
           <Button
             type="submit"
@@ -127,6 +138,13 @@ function RegisterForm() {
             {isPending ? "Creating Account..." : "Create Account"}
           </Button>
         </form>
+
+        <div className="mt-6">
+          <GoogleSignInButton
+            nextPath={nextPath}
+            onError={handleGoogleError}
+          />
+        </div>
 
         <p className="mt-8 text-center text-sm text-muted-foreground">
           Already have an account?{" "}
@@ -153,7 +171,7 @@ export default function RegisterPage() {
         fallback={
           <Card className="w-full max-w-lg">
             <CardHeader className="text-center">
-              <h1 className="text-3xl font-semibold tracking-tight">
+              <h1 className="type-h3">
                 Create Account
               </h1>
             </CardHeader>

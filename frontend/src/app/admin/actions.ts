@@ -6,6 +6,7 @@ import { ApiError, apiFetch } from "@/lib/api";
 import type {
   AdminOrder,
   AdminProduct,
+  ContactMessage,
   CreateProductInput,
   OrderStatus,
   UpdateProductInput,
@@ -36,6 +37,7 @@ function revalidateAdmin() {
   revalidatePath("/admin");
   revalidatePath("/admin/products");
   revalidatePath("/admin/orders");
+  revalidatePath("/admin/messages");
   revalidatePath("/shop");
   revalidatePath("/");
 }
@@ -132,5 +134,20 @@ export async function updateOrderStatusAction(
     return success(order);
   } catch (error) {
     return handleError<AdminOrder>(error);
+  }
+}
+
+export async function markContactMessageReadAction(
+  id: string,
+): Promise<ActionResult<ContactMessage>> {
+  try {
+    const message = await apiFetch<ContactMessage>(
+      `/admin/contact-messages/${id}/read`,
+      { method: "PATCH" },
+    );
+    revalidateAdmin();
+    return success(message);
+  } catch (error) {
+    return handleError<ContactMessage>(error);
   }
 }

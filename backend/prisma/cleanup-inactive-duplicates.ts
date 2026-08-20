@@ -222,7 +222,7 @@ async function main() {
     throw new Error(`Expected 38 active products after cleanup, found ${activeAfter}`);
   }
 
-  const missingTargets = [];
+  const missingTargets: string[] = [];
   for (const slug of TARGET_PRODUCT_SLUGS) {
     const stillThere = await prisma.product.findUnique({ where: { slug } });
     if (stillThere) missingTargets.push(slug);

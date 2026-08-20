@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Package } from "lucide-react";
@@ -10,6 +9,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { ProductThumb } from "@/components/commerce/ProductThumb";
 import { ApiError, apiFetch, getAccessToken } from "@/lib/api";
 import { formatInr, formatOrderStatus } from "@/lib/format";
 import type { Order } from "@/lib/types";
@@ -35,7 +35,7 @@ export default async function OrdersPage() {
     return (
       <main className="flex flex-1 items-center justify-center px-6 py-24">
         <div className="mx-auto max-w-md text-center">
-          <h1 className="text-3xl font-semibold tracking-tight">
+          <h1 className="type-h3">
             Orders unavailable
           </h1>
           <p className="mt-4 text-muted-foreground">
@@ -56,7 +56,7 @@ export default async function OrdersPage() {
               aria-hidden="true"
             />
           </div>
-          <h1 className="mt-8 text-3xl font-semibold tracking-tight">
+          <h1 className="type-h3 mt-8">
             No orders yet
           </h1>
           <p className="mt-4 text-base leading-7 text-muted-foreground">
@@ -77,7 +77,7 @@ export default async function OrdersPage() {
   return (
     <main className="px-6 py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-4xl">
-        <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+        <h1 className="type-h2">
           My Orders
         </h1>
         <p className="mt-4 text-base text-muted-foreground">
@@ -111,24 +111,17 @@ export default async function OrdersPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {order.items.map((item) => {
-                    const image = item.product.images[0];
-                    return (
+                  {order.items.map((item) => (
                       <div
                         key={item.id}
                         className="grid grid-cols-[3.5rem_1fr_auto] items-center gap-3"
                       >
-                        <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
-                          {image ? (
-                            <Image
-                              src={image.url}
-                              alt={image.altText ?? item.productName}
-                              fill
-                              sizes="56px"
-                              className="object-cover"
-                            />
-                          ) : null}
-                        </div>
+                        <ProductThumb
+                          slug={item.product.slug}
+                          alt={item.productName}
+                          sizes="56px"
+                          className="w-14"
+                        />
                         <div>
                           <p className="text-sm font-medium">
                             {item.productName}
@@ -141,8 +134,7 @@ export default async function OrdersPage() {
                           {formatInr(item.lineTotal)}
                         </span>
                       </div>
-                    );
-                  })}
+                    ))}
                 </div>
                 <Separator className="my-5" />
                 <Link

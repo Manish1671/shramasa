@@ -61,7 +61,7 @@ export function AddToCartButton({
         type="button"
         variant={variant}
         size={size}
-        className={cn("w-full rounded-sm transition-all duration-300", className)}
+        className={cn("w-full transition-colors duration-300", className)}
         disabled={disabled || pending}
         onClick={handleClick}
       >

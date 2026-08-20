@@ -103,4 +103,14 @@ export class AdminController {
   ) {
     return this.adminService.updateOrderStatus(id, dto.status);
   }
+
+  @Get('contact-messages')
+  listContactMessages() {
+    return this.adminService.listContactMessages();
+  }
+
+  @Patch('contact-messages/:id/read')
+  markContactMessageRead(@Param('id') id: string) {
+    return this.adminService.markContactMessageRead(id);
+  }
 }
