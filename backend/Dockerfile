@@ -1,9 +1,12 @@
 FROM node:22-alpine AS deps
 WORKDIR /app
+RUN apk add --no-cache python3 make g++
 RUN corepack enable
 COPY package.json pnpm-lock.yaml ./
 COPY prisma ./prisma
 COPY prisma.config.ts ./
+# Railway injects NODE_ENV=production; that would skip Nest/Prisma (devDependencies).
+ENV NODE_ENV=development
 RUN pnpm install --frozen-lockfile
 
 FROM node:22-alpine AS build
@@ -11,6 +14,8 @@ WORKDIR /app
 RUN corepack enable
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+ENV NODE_ENV=development
+ENV DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:5432/postgres"
 RUN pnpm exec prisma generate && pnpm run build
 
 FROM node:22-alpine AS runner
